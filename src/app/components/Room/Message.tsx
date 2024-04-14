@@ -1,7 +1,7 @@
 import {Avatar} from "@/app/components/Avatar";
 
 interface MessageProps {
-    own?: boolean
+    own?: boolean,
 }
 
 export const Message = ({ own } : MessageProps) => {

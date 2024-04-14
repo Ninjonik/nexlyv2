@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react";
 import { FaSun, FaMoon } from 'react-icons/fa';
 
-
 export const ThemeSelector = () => {
-    const [theme, setTheme] = useState(
-        localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
-    );
+
+    const [theme, setTheme] = useState("light");
 
     const handleToggle = (e: { target: { checked: boolean; }; }) => {
         if (e.target.checked) {
@@ -16,6 +14,11 @@ export const ThemeSelector = () => {
             setTheme("light");
         }
     };
+
+    useEffect(() => {
+        const themeStr: string = localStorage.getItem("theme") || "light";
+        setTheme(themeStr);
+    }, []);
 
     useEffect(() => {
         // @ts-ignore

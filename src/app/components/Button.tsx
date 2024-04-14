@@ -9,13 +9,16 @@ interface ButtonProps {
     title?: string
     text?: string
     icon?: ReactNode
+    name?: string
 }
 
-export const Button = ({ color = "default", type = "button", onClick = () => {}, title = "", text = "", icon } : ButtonProps) => {
+export const Button = ({ color = "default", type = "button", onClick = () => {}, title = "", text = "", icon, name = "" } : ButtonProps) => {
     return (
         <button
             title={ (title ? title : (text ?? " ")) } type={type}
             className={`btn btn-outline btn-${color}`}
+            name={name}
+            id={name}
             onClick={onClick}
         >
             {icon && icon} {text}
