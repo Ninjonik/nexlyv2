@@ -39,7 +39,7 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
 export async function PATCH(req: Request, res: Response) {
     const { roomCode, token, name, avatar } = await req.json();
 
-    if(!roomCode || !token || !name){
+    if(!roomCode || !token){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 

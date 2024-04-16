@@ -6,8 +6,21 @@ import {Textarea} from "@/app/components/Textarea";
 import {ThemeSelector} from "@/app/components/ThemeSelector";
 import {ListUser} from "@/app/components/Room/ListUser";
 import {MessageSection} from "@/app/components/Room/MessageSection";
+import {databases} from "@/app/utils/appwrite-server";
+import {database} from "@/app/utils/appwrite";
+import {Query} from "node-appwrite";
+import {redirect} from "next/navigation";
 
-const Room = () => {
+const Room = async ({ params } : { params: {roomCode: string} }) => {
+
+    const data = await databases.listDocuments(
+        database,
+        "rooms",
+        [
+            Query.equal("code", params.roomCode)
+        ]
+    )
+    if(!data) redirect("/404")
 
     return (
         <main className={"h-full w-full grid grid-cols-9 grid-rows-12 text-base-content"}>

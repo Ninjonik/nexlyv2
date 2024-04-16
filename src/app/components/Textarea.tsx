@@ -23,7 +23,7 @@ export const Textarea = ({ className } : TextareaProps ) => {
             </div>
             <div className={"w-full"}>
                 <TextareaAutosize
-                    className={`textarea focus:outline-none focus:border-none w-full h-full ${className} p-2 resize-none bg-base-300 max-h-96 overflow-y-scroll`}
+                    className={`textarea focus:outline-none focus:border-none w-full h-full ${className} p-2 resize-none bg-base-300 max-h-96 overflow-y-scroll no-scrollbar`}
                     cacheMeasurements
                     ref={ref}
                 />

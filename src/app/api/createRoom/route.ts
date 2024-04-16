@@ -66,7 +66,7 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
 export async function POST(req: Request, res: Response) {
     const { token, name, avatar, roomName, roomDescription, roomAvatar } = await req.json();
 
-    if(!token || !name){
+    if(!token){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 

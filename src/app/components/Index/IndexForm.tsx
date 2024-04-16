@@ -7,6 +7,7 @@ import React, {SyntheticEvent, useCallback, useState} from "react";
 import {account, database, databases} from "@/app/utils/appwrite";
 import {ID, Permission, Query, Role} from "appwrite";
 import {useRouter} from "next/navigation";
+import generateRandomString from "@/app/utils/generateRandomString";
 
 export interface IndexFormInterface {
     name: string,
@@ -27,27 +28,14 @@ export const IndexForm = () => {
         e.preventDefault();
         const eventSubmitter = (e.nativeEvent as SubmitEvent).submitter?.id;
         if(!eventSubmitter) return;
-        console.info(form);
-        if(!form?.name){
-            return setError("You must fill in your nickname first.");
-        }
 
-        function generateRandomString(length = 36) {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-            let result = '';
-            // Use Date.now() to get the current timestamp in milliseconds and convert it to a base 36 string
-            // This ensures the string starts with a unique timestamp part
-            result += Date.now().toString(36);
-            // Add a random number to the string to further increase uniqueness
-            // Use Math.random().toString(36).substr(2) to get a random number in base 36
-            result += Math.random().toString(36).substr(2);
-            // If the combined string is not long enough, fill the rest with random characters
-            while (result.length < length) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            // Trim the string to the desired length if it's longer
-            return result.substr(0, length);
-        }
+        /* Create a new user */
+        const generatedToken =  generateRandomString();
+        localStorage.setItem("user", JSON.stringify({
+            name: form?.name || "Anonymous",
+            avatar: form?.avatar,
+            token: generatedToken
+        }));
 
         if(eventSubmitter === "joinRoom"){
             const roomCode = form?.roomCode
@@ -71,14 +59,6 @@ export const IndexForm = () => {
             }
 
             /* Room exists and is open for new users */
-
-            /* Create a new user */
-            const generatedToken =  generateRandomString();
-            localStorage.setItem("user", JSON.stringify({
-                name: form?.name,
-                avatar: form?.avatar,
-                token: generatedToken
-            }));
 
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
@@ -106,13 +86,6 @@ export const IndexForm = () => {
         }
 
         if(eventSubmitter === "createRoom"){
-            /* Create a new user */
-            const generatedToken =  generateRandomString();
-            localStorage.setItem("user", JSON.stringify({
-                name: form?.name,
-                avatar: form?.avatar,
-                token: generatedToken
-            }));
 
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/createRoom`,
@@ -153,7 +126,7 @@ export const IndexForm = () => {
             )}
             <form className={"flex flex-row justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
                 <div className={"flex flex-col gap-4"}>
-                    <Input name={"name"} label={"Enter your nickname"} required={true} form={form?.name}
+                    <Input name={"name"} label={"Enter your nickname"} form={form?.name}
                            setForm={setForm}/>
                     <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
                            setForm={setForm}/>

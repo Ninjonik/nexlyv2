@@ -1,6 +1,6 @@
 import {JoinRoomForm} from "@/app/components/JoinRoom/JoinRoomForm";
 
-export default function JoinRoom() {
+export default function JoinRoom({ params } : { params: {roomCode: string} }) {
     return (
         <main className={"w-full h-full flex flex-col justify-center items-center"}>
             <div className={"h-2/3 w-1/3 bg-base-100 rounded-xl flex flex-col items-center text-center p-8 gap-8"}>
@@ -11,7 +11,7 @@ export default function JoinRoom() {
                         realtime chat-messaging and video-calling application.</h3>
                 </div>
                 <div className={"flex flex-col gap-4 justify-evenly w-full h-full"}>
-                    <JoinRoomForm />
+                    <JoinRoomForm roomCode={params.roomCode} />
                 </div>
             </div>
         </main>

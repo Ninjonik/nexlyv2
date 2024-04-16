@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import {ClientWrapper} from "@/app/ClientWrapper";
 
 export const metadata: Metadata = {
   title: "Nexly",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={"w-screen h-screen"}>{children}</body>
+      <ClientWrapper>
+        <body className={"w-screen h-screen"}>{children}</body>
+      </ClientWrapper>
     </html>
   );
 }
