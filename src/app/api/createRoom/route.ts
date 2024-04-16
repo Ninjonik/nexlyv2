@@ -27,6 +27,7 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
             )
             const resJson = await res.json();
             if(resJson?.error){
+                /* Code does not exist, so end the loop */
                 codeExists = false
                 continue
             }
@@ -41,7 +42,7 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
     const newUser: any = await databases.createDocument(
         database,
         "users",
-        ID.unique(),
+        generatedCode,
         {
             name: name,
             // avatar: avatar,
@@ -49,9 +50,7 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
             room: {
                 name: roomName,
                 closed: false,
-                description: roomDescription,
-                code: generatedCode
-            }
+                description: roomDescription,}
         },
         [
             Permission.read(Role.any())

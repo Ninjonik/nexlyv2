@@ -2,7 +2,6 @@ interface Room {
     name: string;
     closed: boolean;
     description: string;
-    code: string;
     $id: string;
     $createdAt: string;
     $updatedAt: string;

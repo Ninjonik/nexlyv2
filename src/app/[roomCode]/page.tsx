@@ -13,14 +13,14 @@ import {redirect} from "next/navigation";
 
 const Room = async ({ params } : { params: {roomCode: string} }) => {
 
-    const data = await databases.listDocuments(
+    const data = await databases.getDocument(
         database,
         "rooms",
-        [
-            Query.equal("code", params.roomCode)
-        ]
-    )
+        params.roomCode
+    ) as Room
     if(!data) redirect("/404")
+
+    console.info(data)
 
     return (
         <main className={"h-full w-full grid grid-cols-9 grid-rows-12 text-base-content"}>

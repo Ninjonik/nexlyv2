@@ -14,9 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ClientWrapper>
-        <body className={"w-screen h-screen"}>{children}</body>
-      </ClientWrapper>
+        <body className={"w-screen h-screen"}>
+            <ClientWrapper>
+                {children}
+            </ClientWrapper>
+        </body>
     </html>
   );
 }

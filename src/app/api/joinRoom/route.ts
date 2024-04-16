@@ -7,7 +7,7 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
         database,
         "rooms",
         [
-            Query.equal("code", roomCode.toUpperCase()),
+            Query.equal("$id", roomCode.toUpperCase()),
             Query.equal("closed", false)
         ]
     ) as { documents: Room[] }
