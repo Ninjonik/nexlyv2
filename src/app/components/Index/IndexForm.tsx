@@ -74,7 +74,11 @@ export const IndexForm = () => {
 
             /* Create a new user */
             const generatedToken =  generateRandomString();
-            localStorage.setItem("userToken", generatedToken);
+            localStorage.setItem("user", JSON.stringify({
+                name: form?.name,
+                avatar: form?.avatar,
+                token: generatedToken
+            }));
 
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
@@ -102,9 +106,13 @@ export const IndexForm = () => {
         }
 
         if(eventSubmitter === "createRoom"){
-            // Function to generate a unique room code
+            /* Create a new user */
             const generatedToken =  generateRandomString();
-            localStorage.setItem("userToken", generatedToken);
+            localStorage.setItem("user", JSON.stringify({
+                name: form?.name,
+                avatar: form?.avatar,
+                token: generatedToken
+            }));
 
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/createRoom`,
