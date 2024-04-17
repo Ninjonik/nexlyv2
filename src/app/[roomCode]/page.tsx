@@ -11,16 +11,16 @@ import {database} from "@/app/utils/appwrite";
 import {Query} from "node-appwrite";
 import {redirect} from "next/navigation";
 
+export const dynamic = 'force-dynamic'
+
 const Room = async ({ params } : { params: {roomCode: string} }) => {
 
-    const data = await databases.getDocument(
+    const room = await databases.getDocument(
         database,
         "rooms",
         params.roomCode
     ) as Room
-    if(!data) redirect("/404")
-
-    console.info(data)
+    if(!room) redirect("/404")
 
     return (
         <main className={"h-full w-full grid grid-cols-9 grid-rows-12 text-base-content"}>
@@ -28,12 +28,12 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
                 <div className={"flex flex-row justify-center items-center gap-2"}>
                     <Avatar/>
                     <div className={"flex flex-col justify-start"}>
-                        <h1 className={"text-2xl font-bold"}>Room for Poggers</h1>
-                        <h3>1 Members</h3>
+                        <h1 className={"text-2xl font-bold"}>{room.name}</h1>
+                        <h3>{room.users.length} Members</h3>
                     </div>
                 </div>
                 <div className={"flex justify-center items-center"}>
-                    <h2 className={"text-4xl font-bold italic"}>#B34Z8F</h2>
+                    <h2 className={"text-4xl font-bold italic"}>#{room.$id}</h2>
                 </div>
             </header>
 
@@ -58,20 +58,19 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
             </main>
 
             <aside className={"row-span-11 col-span-2 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8"}>
-                <h2 className={"font-bold text-3xl"}>Room for Poggers</h2>
+                <h2 className={"font-bold text-3xl"}>{room.name}</h2>
 
                 <div className={"flex flex-col gap-4"}>
                     <div className={"flex flex-row justify-between items-center"}>
                         <h2 className={"font-bold text-2xl flex flex-row justify-center items-center text-center gap-2"}>{
-                            <FaUser/>} Members (1)</h2>
+                            <FaUser/>} Members ({room.users.length})</h2>
                         <Anchor icon={<FaPlus/>} title={"Invite new people"} hideTitle={true} size={"3xl"}/>
                     </div>
 
                     <div className={"flex flex-col gap-3"}>
-                        <ListUser/>
-                        <ListUser/>
-                        <ListUser/>
-                        <ListUser/>
+                        {room.users.map((user, index) => (
+                            <ListUser key={index} user={user}/>
+                        ))}
                     </div>
                 </div>
 

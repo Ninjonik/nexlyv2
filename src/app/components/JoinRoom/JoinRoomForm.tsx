@@ -74,7 +74,8 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
             return setError(joinResJson.error);
         }
 
-        router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
+        router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode, );
+        router.refresh()
         return;
 
 

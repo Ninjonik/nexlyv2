@@ -1,12 +1,13 @@
 interface AvatarProps {
-    className?: string
+    className?: string,
+    avatar?: string
 }
 
-export const Avatar = ({ className } : AvatarProps) => {
+export const Avatar = ({ className, avatar = "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" } : AvatarProps) => {
     return (
         <div className={`avatar ${className}`}>
             <div className="w-16 mask mask-squircle">
-                <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"/>
+                <img src={avatar}/>
             </div>
         </div>
     );
