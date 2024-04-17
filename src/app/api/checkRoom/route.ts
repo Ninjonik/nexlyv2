@@ -2,15 +2,19 @@ import {database, databases} from "@/app/utils/appwrite-server";
 import {Query} from "node-appwrite";
 
 const apiHandler = async (roomCode: string) => {
-    const roomData = await databases.getDocument(
-        database,
-        "rooms",
-        roomCode
-    )
+    try {
+        const roomData = await databases.getDocument(
+            database,
+            "rooms",
+            roomCode
+        )
 
-    if (roomData && roomData?.$id) {
-        return Response.json({ success: "Success" }, { status: 200 })
-    } else {
+        if (roomData && roomData?.$id) {
+            return Response.json({ success: "Success" }, { status: 200 })
+        } else {
+            return Response.json({ error: 'Room with this invite code was not found.' }, { status: 404 })
+        }
+    } catch {
         return Response.json({ error: 'Room with this invite code was not found.' }, { status: 404 })
     }
 

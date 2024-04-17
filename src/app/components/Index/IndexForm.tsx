@@ -126,7 +126,7 @@ export const IndexForm = () => {
             )}
             <form className={"flex flex-row justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
                 <div className={"flex flex-col gap-4"}>
-                    <Input name={"name"} label={"Enter your nickname"} form={form?.name}
+                    <Input name={"name"} label={"Nickname"} form={form?.name}
                            setForm={setForm}/>
                     <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
                            setForm={setForm}/>
@@ -135,8 +135,8 @@ export const IndexForm = () => {
                 </div>
                 <div className={"divider"}/>
                 <div className={"flex flex-col gap-4"}>
-                    <Input name={"roomName"} label={"Enter your room name"} form={form?.roomName} setForm={setForm}/>
-                    <Input name={"roomDescription"} label={"Enter your room description"} form={form?.roomDescription} setForm={setForm}/>
+                    <Input name={"roomName"} label={"Room name"} form={form?.roomName} setForm={setForm}/>
+                    <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription} setForm={setForm}/>
                     <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"}
                                   avatarText={"Select group avatar"}/>
                     <Button color={"primary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>

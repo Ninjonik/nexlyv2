@@ -42,12 +42,13 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
     const newUser: any = await databases.createDocument(
         database,
         "users",
-        generatedCode,
+        ID.unique(),
         {
             name: name,
             // avatar: avatar,
             token: token,
             room: {
+                "$id": generatedCode,
                 name: roomName,
                 closed: false,
                 description: roomDescription,}

@@ -86,7 +86,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                 <div className={"text-red-500"}>{error}</div>
             )}
             <form className={"flex flex-col gap-4 w-full"} onSubmit={handleFormSubmit}>
-                <Input name={"name"} label={"Enter your nickname"} form={form?.name}
+                <Input name={"name"} label={"Nickname"} form={form?.name}
                        setForm={setForm}/>
                 <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
                 <Button color={"primary"} text={"Join the room"} type={"submit"} />
