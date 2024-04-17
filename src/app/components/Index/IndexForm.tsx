@@ -31,11 +31,6 @@ export const IndexForm = () => {
 
         /* Create a new user */
         const generatedToken =  generateRandomString();
-        localStorage.setItem("user", JSON.stringify({
-            name: form?.name || "Anonymous",
-            avatar: form?.avatar,
-            token: generatedToken
-        }));
 
         if(eventSubmitter === "joinRoom"){
             const roomCode = form?.roomCode
@@ -81,6 +76,13 @@ export const IndexForm = () => {
                 return setError(joinResJson.error);
             }
 
+            localStorage.setItem("user", JSON.stringify({
+                name: form?.name || "Anonymous",
+                avatar: form?.avatar,
+                token: generatedToken,
+                $id: joinResJson.newUser.$id,
+            }));
+
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
             return;
         }
@@ -109,6 +111,13 @@ export const IndexForm = () => {
             if(!joinResJson || !joinResJson?.roomCode){
                 return setError(joinResJson.error);
             }
+
+            localStorage.setItem("user", JSON.stringify({
+                name: form?.name || "Anonymous",
+                avatar: form?.avatar,
+                token: generatedToken,
+                $id: joinResJson.newUser.$id,
+            }));
 
             const roomCode: string = joinResJson.roomCode
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);

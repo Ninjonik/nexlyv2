@@ -1,4 +1,7 @@
-interface Room {
+import User from "@/app/utils/interfaces/UserInterface";
+import Message from "@/app/utils/interfaces/MessageInterface";
+
+export default interface Room {
     name: string;
     closed: boolean;
     description: string;
@@ -7,6 +10,7 @@ interface Room {
     $updatedAt: string;
     $permissions: any[];
     users: User[];
+    messages: Message[];
     $databaseId: string;
     $collectionId: string;
 }

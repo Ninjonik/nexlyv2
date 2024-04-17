@@ -1,15 +1,16 @@
 import React from 'react';
 import {Avatar} from "@/app/components/Avatar";
+import RoomInterface from "@/app/utils/interfaces/RoomInterface";
 import {FaPhone, FaUsers, FaArrowRight, FaUser, FaPlus} from 'react-icons/fa';
 import {Anchor} from "@/app/components/Anchor";
-import {Textarea} from "@/app/components/Textarea";
 import {ThemeSelector} from "@/app/components/ThemeSelector";
 import {ListUser} from "@/app/components/Room/ListUser";
-import {MessageSection} from "@/app/components/Room/MessageSection";
 import {databases} from "@/app/utils/appwrite-server";
 import {database} from "@/app/utils/appwrite";
-import {Query} from "node-appwrite";
 import {redirect} from "next/navigation";
+import {RoomMain} from "@/app/components/Room/RoomMain";
+import {Query} from "node-appwrite";
+import Message from "@/app/utils/interfaces/MessageInterface";
 
 export const dynamic = 'force-dynamic'
 
@@ -19,8 +20,17 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
         database,
         "rooms",
         params.roomCode
-    ) as Room
+    ) as RoomInterface
     if(!room) redirect("/404")
+    const messagesQuery = await databases.listDocuments(
+        database,
+        "messages",
+        [
+            Query.equal("room", room.$id),
+            Query.limit(10),
+        ]
+    );
+    const messages = messagesQuery.documents as Message[]
 
     return (
         <main className={"h-full w-full grid grid-cols-9 grid-rows-12 text-base-content"}>
@@ -47,15 +57,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
                 </div>
             </aside>
 
-            <main className={"flex flex-col row-span-12 col-span-7"}>
-                <section className={"bg-base-200 border-t-2 border-primary flex flex-col-reverse gap-6 p-4 overflow-y-scroll"} id="scrollableDiv">
-                    <MessageSection initialData={[1,2,3,4,5,6,7,8,9,10]} />
-                </section>
-
-                <footer className={"bg-base-100 flex w-full p-2"}>
-                    <Textarea/>
-                </footer>
-            </main>
+            <RoomMain room={room} messagesProps={messages} />
 
             <aside className={"row-span-11 col-span-2 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8"}>
                 <h2 className={"font-bold text-3xl"}>{room.name}</h2>

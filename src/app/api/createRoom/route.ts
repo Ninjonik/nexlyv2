@@ -58,7 +58,7 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
         ]
     );
 
-    if(newUser && newUser.room && newUser.room.$id) return Response.json({ roomCode: generatedCode });
+    if(newUser && newUser.room && newUser.room.$id) return Response.json({ roomCode: generatedCode, newUser: newUser });
     return Response.json({ error: "Unknown error." }, { status: 500 })
 
 }

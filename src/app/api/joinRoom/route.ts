@@ -1,6 +1,7 @@
 import {database, databases} from "@/app/utils/appwrite-server";
 import {Query} from "node-appwrite";
 import {ID, Permission, Role} from "appwrite";
+import Room from "@/app/utils/interfaces/RoomInterface";
 
 const apiHandler = async (roomCode: string, token: string, name: string, avatar: File) => {
     const roomQuery = await databases.listDocuments(
@@ -14,7 +15,7 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
 
     if (roomQuery && roomQuery.documents && roomQuery.documents[0]) {
         const roomData = roomQuery.documents[0]
-        await databases.createDocument(
+        const newUser = await databases.createDocument(
             database,
             "users",
             ID.unique(),
@@ -29,7 +30,7 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
             ]
         )
 
-        return Response.json({ success: 'Room successfully joined..' }, { status: 200 })
+        return Response.json({ success: 'Room successfully joined..', newUser: newUser }, { status: 200 })
     } else {
         return Response.json({ error: 'Room with this invite code was not found.' }, { status: 404 })
     }

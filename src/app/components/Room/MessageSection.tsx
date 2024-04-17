@@ -1,52 +1,72 @@
 "use client"
 
 import {Message} from "@/app/components/Room/Message";
+import MessageInterface from "@/app/utils/interfaces/MessageInterface";
 import InfiniteScroll from "react-infinite-scroll-component";
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
+import {Loading} from "@/app/components/Loading";
+import {Query} from "appwrite";
+import Room from "@/app/utils/interfaces/RoomInterface";
+import {database, databases} from "@/app/utils/appwrite";
 
 interface MessageSectionProps {
-    initialData: any
+    initialData: MessageInterface[],
+    room: Room
 }
 
-export const MessageSection = ({ initialData } : MessageSectionProps ) => {
+export const MessageSection = ({ initialData, room } : MessageSectionProps ) => {
 
     const [ data, setData ] = useState( initialData );
-    const MAX_DATA = 50;
-    const hasMore = data.length < MAX_DATA;
+    const [lastLoadedMessageId, setLastLoadedMessageId ] = useState<string | null>(null);
+    const [hasMore, setHasMore] = useState<boolean>(true);
 
-    function fetchData( limit=10 ){
-        const start = data.length + 1;
-        const end = (data.length + limit) >= MAX_DATA
-            ? MAX_DATA
-            : (data.length + limit);
-        let newData = [ ...data ];
-
-        for( var i = start ; i <= end ; i++ ) {
-            newData = [ ...newData, i ];
+    const fetchData = useCallback(async ( limit: number = 10 ) => {
+        let query = [Query.equal('room', room.$id), Query.orderDesc("$updatedAt"), Query.limit(limit)];
+        if (lastLoadedMessageId) {
+            query.push(Query.cursorAfter(lastLoadedMessageId))
         }
 
-        // fake delay to simulate a time-consuming network request
-        setTimeout( () => setData( newData ), 1500 );
-    }
+        const fetchedMessage = await databases.listDocuments(
+            database,
+            'messages',
+            query
+        );
+        const transformedMessages = fetchedMessage.documents as MessageInterface[];
+        console.info("Transformed messages", transformedMessages)
+
+        setData(transformedMessages)
+        if (transformedMessages.length > 0) {
+            setLastLoadedMessageId(transformedMessages[transformedMessages.length - 1].$id);
+        } else {
+            setHasMore(false);
+        }
+    }, [data, lastLoadedMessageId, room.$id]);
+
+    useEffect(() => {
+        if (initialData.length > 0) {
+            setLastLoadedMessageId(initialData[initialData.length - 1].$id);
+        } else {
+            setHasMore(false);
+        }
+        fetchData();
+    }, []);
+
+    console.info(data, hasMore, lastLoadedMessageId);
 
     return (
         <InfiniteScroll
             dataLength={data.length}
             next={fetchData}
             hasMore={hasMore}
-            loader={<p className="text-center m-5">⏳&nbsp;Loading...</p>}
-            endMessage={<p className="text-center m-5">That&apos;s all folks!🐰🥕</p>}
+            loader={<p className="text-center m-5">⏳&nbsp;Loading <Loading /></p>}
+            endMessage={<p className="text-center m-5">-- END OF CONVERSATION --</p>}
             className={"flex flex-col-reverse gap-6 p-4"}
             scrollableTarget="scrollableDiv"
             inverse={true}
         >
             {
-                data.map((d: string | number) => (
-                    // <div className="card mb-4" key={d} style={{width: "18rem"}}>
-                    //     <div className="card-header">Card#{d}</div>
-                    //     <div className="card-body">Lorem ipsum dolor sit amet</div>
-                    // </div>
-                    <Message key={d} own={true}/>
+                data.map((message: MessageInterface, key: number) => (
+                    <Message key={key} message={message} />
                 ))
             }
         </InfiniteScroll>

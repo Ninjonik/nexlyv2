@@ -1,4 +1,3 @@
-import {Button} from "@/app/components/Button";
 import React from "react";
 import {IndexForm} from "@/app/components/Index/IndexForm";
 import {ClientWrapper} from "@/app/ClientWrapper";

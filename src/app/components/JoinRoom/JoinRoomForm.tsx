@@ -27,11 +27,6 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
 
         /* Create a new user */
         const generatedToken =  generateRandomString();
-        localStorage.setItem("user", JSON.stringify({
-            name: form?.name || "Anonymous",
-            avatar: form?.avatar,
-            token: generatedToken
-        }));
 
         /* Check if the desired room exists and is open for new users */
         const res = await fetch(
@@ -73,6 +68,13 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
         if(joinResJson?.error){
             return setError(joinResJson.error);
         }
+
+        localStorage.setItem("user", JSON.stringify({
+            name: form?.name || "Anonymous",
+            avatar: form?.avatar,
+            token: generatedToken,
+            $id: joinResJson.newUser.$id,
+        }));
 
         router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode, );
         router.refresh()

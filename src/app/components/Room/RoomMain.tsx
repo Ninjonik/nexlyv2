@@ -1,0 +1,31 @@
+"use client"
+
+import Room from "@/app/utils/interfaces/RoomInterface";
+import React, {useState} from "react";
+import Message from "@/app/utils/interfaces/MessageInterface";
+import {MessageSection} from "@/app/components/Room/MessageSection";
+import {Textarea} from "@/app/components/Textarea";
+
+interface RoomMainProps {
+    room: Room;
+    messagesProps: Message[];
+}
+
+export const RoomMain = ({room, messagesProps}: RoomMainProps) => {
+
+    const [messages, setMessages] = useState<Message[]>(messagesProps);
+
+    return (
+        <main className={"flex flex-col row-span-12 col-span-7 justify-between bg-base-200"}>
+            <section
+                className={"bg-base-200 border-t-2 border-primary flex flex-col-reverse gap-6 p-4 overflow-y-scroll no-scrollbar"}
+                id="scrollableDiv">
+                <MessageSection initialData={messages} room={room} />
+            </section>
+
+            <footer className={"bg-base-100 flex w-full p-2"}>
+                <Textarea/>
+            </footer>
+        </main>
+    );
+};
