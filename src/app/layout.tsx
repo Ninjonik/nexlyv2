@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import {ClientWrapper} from "@/app/ClientWrapper";
+import {UserContextProvider} from "@/app/utils/UserContext";
 
 export const metadata: Metadata = {
   title: "Nexly",
@@ -15,9 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
         <body className={"w-screen h-screen"}>
-            <ClientWrapper>
-                {children}
-            </ClientWrapper>
+            <UserContextProvider>
+                <ClientWrapper>
+                    {children}
+                </ClientWrapper>
+            </UserContextProvider>
+
         </body>
     </html>
   );

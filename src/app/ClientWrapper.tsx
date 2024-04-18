@@ -4,10 +4,13 @@ import React, {useEffect, useState} from "react";
 import UserLocalStorageInterface from "@/app/utils/interfaces/UserLocalStorageInterface";
 import {LoadingFullscreen} from "@/app/components/LoadingFullscreen";
 import {useRouter} from "next/navigation";
+import {UserContextProvider, useUserContext} from "@/app/utils/UserContext";
+import {account} from "@/app/utils/appwrite";
 
 export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
 
     const [loading, setLoading] = useState<boolean>(true);
+    const {user, setUser} = useUserContext();
     const router = useRouter();
 
     useEffect(() => {
@@ -15,14 +18,13 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
         let loggedIn = false;
 
         /* Runs on initial page load */
-        const handleLoad = () => {
-            const user = localStorage.getItem("user")
+        const handleLoad = async () => {
             if(user){
-                const parsedUser = JSON.parse(user) as UserLocalStorageInterface;
                 localStorage.removeItem("user")
+                await account.deleteSessions()
                 navigator.sendBeacon(`/api/deleteUser`,
                     JSON.stringify({
-                        token: parsedUser.token
+                        token: user.token
                     })
                 );
                 loggedIn = true;
@@ -56,15 +58,14 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
         handleLoad()
 
         /* RUN ON PAGE EXIT */
-        const handleUnload = () => {
+        const handleUnload = async () => {
             console.log("removing cookies data")
-            const user = localStorage.getItem("user")
             if(user){
-                const parsedUser = JSON.parse(user) as UserLocalStorageInterface;
                 localStorage.removeItem("user")
+                await account.deleteSessions()
                 navigator.sendBeacon(`/api/deleteUser`,
                     JSON.stringify({
-                        token: parsedUser.token
+                        token: user.token
                     })
                 );
             }
@@ -75,7 +76,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
         return () => {
             window.removeEventListener('beforeunload', handleUnload);
         };
-    }, []);
+    }, [user]);
 
     if(loading) return <LoadingFullscreen />;
 

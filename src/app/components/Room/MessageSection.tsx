@@ -7,7 +7,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {Loading} from "@/app/components/Loading";
 import {Query} from "appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
-import {database, databases} from "@/app/utils/appwrite";
+import {client, database, databases} from "@/app/utils/appwrite";
 
 interface MessageSectionProps {
     initialData: MessageInterface[],
@@ -34,7 +34,7 @@ export const MessageSection = ({ initialData, room } : MessageSectionProps ) => 
         const transformedMessages = fetchedMessage.documents as MessageInterface[];
         console.info("Transformed messages", transformedMessages)
 
-        setData(transformedMessages)
+        setData((prevMessages) => [...prevMessages, ...transformedMessages]);
         if (transformedMessages.length > 0) {
             setLastLoadedMessageId(transformedMessages[transformedMessages.length - 1].$id);
         } else {
@@ -49,6 +49,17 @@ export const MessageSection = ({ initialData, room } : MessageSectionProps ) => 
             setHasMore(false);
         }
         fetchData();
+
+        const unsubscribe = client.subscribe(`databases.${database}.collections.messages.documents`, response => {
+            // Callback will be executed on changes for all files.
+            console.log(response);
+            console.log(response.events);
+        });
+
+        return () => {
+            unsubscribe();
+        }
+
     }, []);
 
     console.info(data, hasMore, lastLoadedMessageId);

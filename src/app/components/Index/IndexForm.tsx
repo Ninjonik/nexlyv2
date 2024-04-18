@@ -55,6 +55,16 @@ export const IndexForm = () => {
 
             /* Room exists and is open for new users */
 
+            try {
+                await account.deleteSessions()
+            } catch (e) {
+                console.log("no session")
+            }
+
+            const newAnonymousSession = await account.createAnonymousSession()
+            await account.updateName(form?.name || "Anonymous")
+            const jwt = await account.createJWT()
+
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
                 {
@@ -66,7 +76,8 @@ export const IndexForm = () => {
                         "roomCode": roomCode,
                         "token": generatedToken,
                         "name": form?.name,
-                        "avatar": form?.avatar
+                        "avatar": form?.avatar,
+                        "jwt": jwt
                     }),
                 }
             )
@@ -89,6 +100,16 @@ export const IndexForm = () => {
 
         if(eventSubmitter === "createRoom"){
 
+            try {
+                await account.deleteSessions()
+            } catch (e) {
+                console.log("no session")
+            }
+
+            const newAnonymousSession = await account.createAnonymousSession()
+            await account.updateName(form?.name || "Anonymous")
+            const jwt = await account.createJWT();
+
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/createRoom`,
                 {
@@ -102,7 +123,8 @@ export const IndexForm = () => {
                         "avatar": form?.avatar,
                         "roomName": form?.roomName,
                         "roomDescription": form?.roomDescription,
-                        "roomAvatar": form?.roomAvatar
+                        "roomAvatar": form?.roomAvatar,
+                        "jwt": jwt
                     }),
                 }
             )

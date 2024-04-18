@@ -5,6 +5,7 @@ import React, {useState} from "react";
 import Message from "@/app/utils/interfaces/MessageInterface";
 import {MessageSection} from "@/app/components/Room/MessageSection";
 import {Textarea} from "@/app/components/Textarea";
+import {RoomFooter} from "@/app/components/Room/RoomFooter";
 
 interface RoomMainProps {
     room: Room;
@@ -23,9 +24,7 @@ export const RoomMain = ({room, messagesProps}: RoomMainProps) => {
                 <MessageSection initialData={messages} room={room} />
             </section>
 
-            <footer className={"bg-base-100 flex w-full p-2"}>
-                <Textarea/>
-            </footer>
+            <RoomFooter room={room} messages={messages} setMessages={setMessages} />
         </main>
     );
 };

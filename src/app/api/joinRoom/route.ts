@@ -2,8 +2,9 @@ import {database, databases} from "@/app/utils/appwrite-server";
 import {Query} from "node-appwrite";
 import {ID, Permission, Role} from "appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
+import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (roomCode: string, token: string, name: string, avatar: File) => {
+const apiHandler = async (roomCode: string, token: string, name: string, avatar: File, id: string) => {
     const roomQuery = await databases.listDocuments(
         database,
         "rooms",
@@ -13,12 +14,14 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
         ]
     ) as { documents: Room[] }
 
+    console.info(roomQuery, roomQuery.documents)
+
     if (roomQuery && roomQuery.documents && roomQuery.documents[0]) {
         const roomData = roomQuery.documents[0]
         const newUser = await databases.createDocument(
             database,
             "users",
-            ID.unique(),
+            id,
             {
                 name: name,
                 avatar: avatar,
@@ -38,11 +41,18 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
 }
 
 export async function PATCH(req: Request, res: Response) {
-    const { roomCode, token, name, avatar } = await req.json();
+    const { roomCode, token, name, avatar, jwt } = await req.json();
 
-    if(!roomCode || !token){
+    if(!roomCode || !token || !jwt){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 
-    return apiHandler(roomCode, token, name, avatar);
+    // VERIFY JWT
+    clientJWT.setJWT(jwt.jwt);
+    const account = await accountJWT.get()
+    if(!account || !account.$id) {
+        return Response.json({ error: 'Invalid JWT' }, { status: 401 })
+    }
+
+    return apiHandler(roomCode, token, name, avatar, account.$id);
 }

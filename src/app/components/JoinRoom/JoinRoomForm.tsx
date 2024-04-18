@@ -6,6 +6,7 @@ import {Button} from "@/app/components/Button";
 import React, {SyntheticEvent, useCallback, useState} from "react";
 import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
+import {account} from "@/app/utils/appwrite";
 
 export interface JoinRoomFormInterface {
     avatar: File,
@@ -48,6 +49,16 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
 
         /* Room exists and is open for new users */
 
+        try {
+            await account.deleteSessions()
+        } catch (e) {
+            console.log("no session")
+        }
+
+        const newAnonymousSession = await account.createAnonymousSession();
+        await account.updateName(form?.name || "Anonymous");
+        const jwt = await account.createJWT();
+
         const joinRes = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
             {
@@ -59,7 +70,8 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                     "roomCode": roomCode,
                     "token": generatedToken,
                     "name": form?.name,
-                    "avatar": form?.avatar
+                    "avatar": form?.avatar,
+                    "jwt": jwt
                 }),
             }
         )

@@ -1,8 +1,9 @@
 import {database, databases} from "@/app/utils/appwrite-server";
 import {Query} from "node-appwrite";
 import {ID, Permission, Role} from "appwrite";
+import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (token: string, name: string, avatar: File, roomName: string, roomDescription: string, roomAvatar: File) => {
+const apiHandler = async (token: string, name: string, avatar: File, roomName: string, roomDescription: string, roomAvatar: File, id: string) => {
 
     const generateUniqueRoomCode = async () => {
         let generatedCode = "";
@@ -42,7 +43,7 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
     const newUser: any = await databases.createDocument(
         database,
         "users",
-        ID.unique(),
+        id,
         {
             name: name,
             // avatar: avatar,
@@ -64,11 +65,18 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
 }
 
 export async function POST(req: Request, res: Response) {
-    const { token, name, avatar, roomName, roomDescription, roomAvatar } = await req.json();
+    const { token, name, avatar, roomName, roomDescription, roomAvatar, jwt } = await req.json();
 
-    if(!token){
+    if(!token || !jwt){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 
-    return apiHandler(token, name, avatar, roomName, roomDescription, roomAvatar);
+    // VERIFY JWT
+    clientJWT.setJWT(jwt.jwt);
+    const account = await accountJWT.get()
+    if(!account || !account.$id) {
+        return Response.json({ error: 'Invalid JWT' }, { status: 401 })
+    }
+
+    return apiHandler(token, name, avatar, roomName, roomDescription, roomAvatar, account.$id);
 }
