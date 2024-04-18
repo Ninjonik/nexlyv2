@@ -11,25 +11,15 @@ export default async ({ req, res, log, error }) => {
 
   if (req.method === 'POST') {
     try {
-      const removedUserId = req.body.$id;
-
-      const userRecord = await database.getDocument('nexly', 'users', removedUserId);
-
-      if (userRecord) {
-        const documentId = userRecord.$id;
-
-        await database.deleteDocument('nexly', 'users', documentId);
+        const removedUserId = req.body.$id;
+        console.log(req.body);
+        console.log(req.body.$id);
+        await database.deleteDocument('nexly', 'users', removedUserId);
 
         return res.json({
           success: true,
           message: 'User record deleted successfully',
         });
-      } else {
-        return res.json({
-          success: false,
-          message: 'User record not found',
-        });
-      }
     } catch (err) {
       error('Error deleting user record:', err);
       error(err.message);
