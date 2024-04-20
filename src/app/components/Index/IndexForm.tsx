@@ -4,8 +4,7 @@ import {Input} from "@/app/components/Input";
 import {AvatarPicker} from "@/app/components/AvatarPicker";
 import {Button} from "@/app/components/Button";
 import React, {SyntheticEvent, useCallback, useState} from "react";
-import {account, database, databases} from "@/app/utils/appwrite";
-import {ID, Permission, Query, Role} from "appwrite";
+import {account} from "@/app/utils/appwrite";
 import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
 
