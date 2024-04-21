@@ -34,7 +34,7 @@ export const UserContextProvider = ({ children }: UserContextProps) => {
             setUser(parsedUser)
         } else {
             setUser(null)
-            console.log("no user found")
+            console.info("no user found")
         }
 
     }, []);

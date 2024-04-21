@@ -29,7 +29,8 @@ const apiHandler = async ( message: string, attachments: [], roomId: string, use
             ID.unique(),
             {
                 room: roomId,
-                author: userId
+                author: userId,
+                message: message
             },
             permissions
         );

@@ -21,7 +21,7 @@ export const RoomMain = ({room, messagesProps}: RoomMainProps) => {
             <section
                 className={"bg-base-200 border-t-2 border-primary flex flex-col-reverse gap-6 p-4 overflow-y-scroll no-scrollbar"}
                 id="scrollableDiv">
-                <MessageSection initialData={messages} room={room} />
+                <MessageSection setMessages={setMessages} messages={messages} room={room} />
             </section>
 
             <RoomFooter room={room} messages={messages} setMessages={setMessages} />

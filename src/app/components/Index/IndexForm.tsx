@@ -21,12 +21,16 @@ export const IndexForm = () => {
 
     const [form, setForm] = useState<IndexFormInterface | undefined>();
     const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
 
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
+
+        setLoading(true)
+
         const eventSubmitter = (e.nativeEvent as SubmitEvent).submitter?.id;
-        if(!eventSubmitter) return;
+        if(!eventSubmitter) return setLoading(false);
 
         /* Create a new user */
         const generatedToken =  generateRandomString();
@@ -49,6 +53,7 @@ export const IndexForm = () => {
             )
             const resJson = await res.json();
             if(resJson?.error){
+                setLoading(false)
                 return setError(resJson.error);
             }
 
@@ -57,7 +62,7 @@ export const IndexForm = () => {
             try {
                 await account.deleteSessions()
             } catch (e) {
-                console.log("no session")
+                console.info("no session")
             }
 
             const newAnonymousSession = await account.createAnonymousSession()
@@ -83,6 +88,7 @@ export const IndexForm = () => {
 
             const joinResJson = await joinRes.json();
             if(joinResJson?.error){
+                setLoading(false)
                 return setError(joinResJson.error);
             }
 
@@ -94,7 +100,7 @@ export const IndexForm = () => {
             }));
 
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
-            return;
+            return setLoading(false);
         }
 
         if(eventSubmitter === "createRoom"){
@@ -102,7 +108,7 @@ export const IndexForm = () => {
             try {
                 await account.deleteSessions()
             } catch (e) {
-                console.log("no session")
+                console.info("no session")
             }
 
             const newAnonymousSession = await account.createAnonymousSession()
@@ -130,6 +136,7 @@ export const IndexForm = () => {
 
             const joinResJson = await joinRes.json();
             if(!joinResJson || !joinResJson?.roomCode){
+                setLoading(false)
                 return setError(joinResJson.error);
             }
 
@@ -142,10 +149,10 @@ export const IndexForm = () => {
 
             const roomCode: string = joinResJson.roomCode
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
-            return;
+            return setLoading(false);
         }
 
-
+        setLoading(false)
 
     }, [form])
 
@@ -169,7 +176,11 @@ export const IndexForm = () => {
                     <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription} setForm={setForm}/>
                     <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"}
                                   avatarText={"Select group avatar"}/>
-                    <Button color={"primary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
+                    {loading ? (
+                        <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={""}/>
+                    ) : (
+                        <Button color={"primary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
+                    )}
                 </div>
             </form>
         </div>

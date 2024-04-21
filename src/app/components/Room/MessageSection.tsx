@@ -1,5 +1,3 @@
-"use client"
-
 import {Message} from "@/app/components/Room/Message";
 import MessageInterface from "@/app/utils/interfaces/MessageInterface";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -10,13 +8,13 @@ import Room from "@/app/utils/interfaces/RoomInterface";
 import {client, database, databases} from "@/app/utils/appwrite";
 
 interface MessageSectionProps {
-    initialData: MessageInterface[],
+    messages: MessageInterface[],
+    setMessages: React.Dispatch<React.SetStateAction<MessageInterface[]>>
     room: Room
 }
 
-export const MessageSection = ({ initialData, room } : MessageSectionProps ) => {
+export const MessageSection = ({ messages, setMessages, room } : MessageSectionProps ) => {
 
-    const [ data, setData ] = useState( initialData );
     const [lastLoadedMessageId, setLastLoadedMessageId ] = useState<string | null>(null);
     const [hasMore, setHasMore] = useState<boolean>(true);
 
@@ -34,17 +32,17 @@ export const MessageSection = ({ initialData, room } : MessageSectionProps ) => 
         const transformedMessages = fetchedMessage.documents as MessageInterface[];
         console.info("Transformed messages", transformedMessages)
 
-        setData((prevMessages) => [...prevMessages, ...transformedMessages]);
+        setMessages((prevMessages) => [...transformedMessages, ...prevMessages,]);
         if (transformedMessages.length > 0) {
             setLastLoadedMessageId(transformedMessages[transformedMessages.length - 1].$id);
         } else {
             setHasMore(false);
         }
-    }, [data, lastLoadedMessageId, room.$id]);
+    }, [messages, lastLoadedMessageId, room.$id]);
 
     useEffect(() => {
-        if (initialData.length > 0) {
-            setLastLoadedMessageId(initialData[initialData.length - 1].$id);
+        if (messages.length > 0) {
+            setLastLoadedMessageId(messages[messages.length - 1].$id);
         } else {
             setHasMore(false);
         }
@@ -62,11 +60,11 @@ export const MessageSection = ({ initialData, room } : MessageSectionProps ) => 
 
     }, []);
 
-    console.info(data, hasMore, lastLoadedMessageId);
+    console.info(messages, hasMore, lastLoadedMessageId);
 
     return (
         <InfiniteScroll
-            dataLength={data.length}
+            dataLength={messages.length}
             next={fetchData}
             hasMore={hasMore}
             loader={<p className="text-center m-5">⏳&nbsp;Loading <Loading /></p>}
@@ -76,7 +74,7 @@ export const MessageSection = ({ initialData, room } : MessageSectionProps ) => 
             inverse={true}
         >
             {
-                data.map((message: MessageInterface, key: number) => (
+                messages.map((message: MessageInterface, key: number) => (
                     <Message key={key} message={message} />
                 ))
             }

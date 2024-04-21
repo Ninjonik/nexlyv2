@@ -1,6 +1,13 @@
-"use client"
-
-import React, {ChangeEvent, useCallback, useContext, useEffect, useRef, useState} from "react";
+import React, {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState
+} from "react";
 import { FaPlus } from 'react-icons/fa';
 import { AiOutlineFileGif, AiOutlineSmile } from "react-icons/ai";
 import {Anchor} from "@/app/components/Anchor";
@@ -10,14 +17,16 @@ import {ID, Permission, Role} from "appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {useUserContext} from "@/app/utils/UserContext";
 import User from "@/app/utils/interfaces/UserInterface";
+import Message from "@/app/utils/interfaces/MessageInterface";
 
 
 interface TextareaProps {
     className?: string,
-    room: Room
+    room: Room,
+    setMessages: Dispatch<SetStateAction<Message[]>>
 }
 
-export const Textarea = ({ className, room } : TextareaProps ) => {
+export const Textarea = ({ className, room, setMessages } : TextareaProps ) => {
 
     const ref = useRef<HTMLTextAreaElement>(null);
     const [text, setText] = useState<string>("")
@@ -56,6 +65,7 @@ export const Textarea = ({ className, room } : TextareaProps ) => {
         const acc = await account.get()
         console.info("USER ID: ", user?.$id)
         console.info("ACCOUNT ID: ", acc.$id)
+        console.info("MESSAGE: ", message)
         const res = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/sendMessage`,
             {
@@ -76,7 +86,10 @@ export const Textarea = ({ className, room } : TextareaProps ) => {
             return
         }
 
-        const newMessage = resJson.data
+        const newMessage: Message = resJson.data
+        setMessages((prevMessages) => [newMessage, ...prevMessages])
+        setText("")
+
         console.info(newMessage)
     }, [room])
 
@@ -88,10 +101,11 @@ export const Textarea = ({ className, room } : TextareaProps ) => {
             </div>
             <div className={"w-full"}>
                 <TextareaAutosize
-                    className={`textarea focus:outline-none focus:border-none w-full h-full ${className} p-2 resize-none bg-base-300 max-h-96 overflow-y-scroll no-scrollbar`}
+                    className={`textarea focus:outline-none focus:border-none w-full h-full ${className} p-2 resize-none bg-base-300 max-h-96 overflow-y-scroll no-scrollbar flex items-center`}
                     cacheMeasurements
                     ref={ref}
                     value={text}
+                    rows={1}
                     onChange={(e) => setText(e.target.value)}
                 />
             </div>

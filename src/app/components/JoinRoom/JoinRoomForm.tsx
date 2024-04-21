@@ -21,10 +21,13 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
 
     const [form, setForm] = useState<JoinRoomFormInterface | undefined>()
     const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
 
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
+
+        setLoading(true)
 
         /* Create a new user */
         const generatedToken =  generateRandomString();
@@ -44,6 +47,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
         )
         const resJson = await res.json();
         if(resJson?.error){
+            setLoading(false)
             return setError(resJson.error);
         }
 
@@ -52,7 +56,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
         try {
             await account.deleteSessions()
         } catch (e) {
-            console.log("no session")
+            console.info("no session")
         }
 
         const newAnonymousSession = await account.createAnonymousSession();
@@ -78,6 +82,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
 
         const joinResJson = await joinRes.json();
         if(joinResJson?.error){
+            setLoading(false)
             return setError(joinResJson.error);
         }
 
@@ -90,6 +95,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
 
         router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode, );
         router.refresh()
+        setLoading(false)
         return;
 
 
@@ -104,7 +110,11 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                 <Input name={"name"} label={"Nickname"} form={form?.name}
                        setForm={setForm}/>
                 <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
-                <Button color={"primary"} text={"Join the room"} type={"submit"} />
+                {loading ? (
+                    <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={""}/>
+                ) : (
+                    <Button color={"primary"} text={"Join the room"} type={"submit"} />
+                )}
             </form>
         </div>
     );

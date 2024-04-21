@@ -29,7 +29,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
                 );
                 loggedIn = true;
             } else {
-                console.log("no user found")
+                console.info("no user found")
             }
         }
 
@@ -38,9 +38,11 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             const roomPattern = /^\/room\/[^\/]+$/; // Matches "/room/[x]"
             const genericPattern = /^\/[^\/]+$/; // Matches "/[x]"
 
+            console.log(path)
+
             if (roomPattern.test(path)) {
                 // If the user is on a "/room/[x]" path, no need to redirect
-                console.log("User is on a valid path.");
+                console.info("User is on a valid path.");
             } else if (genericPattern.test(path)) {
                 // If the user is on a "/[x]" path, redirect to "/room/[x]"
                 const newPath = path.replace(/^\/([^\/]+)$/, '/room/$1');
@@ -59,7 +61,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
 
         /* RUN ON PAGE EXIT */
         const handleUnload = async () => {
-            console.log("removing cookies data")
+            console.info("removing cookies data")
             if(user){
                 localStorage.removeItem("user")
                 await account.deleteSessions()

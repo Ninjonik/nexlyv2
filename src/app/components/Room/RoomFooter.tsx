@@ -13,7 +13,7 @@ export const RoomFooter = ({ room, messages, setMessages }: RoomFooterProps) => 
 
     return (
         <footer className={"bg-base-100 flex w-full p-2"}>
-            <Textarea room={room} />
+            <Textarea room={room} setMessages={setMessages} />
         </footer>
     );
 };

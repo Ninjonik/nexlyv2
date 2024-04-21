@@ -1,6 +1,7 @@
 "use client"
 
 import {ReactNode} from "react";
+import {Loading} from "@/app/components/Loading";
 
 interface ButtonProps {
     color?: "primary" | "secondary" | "accent" | "default"
@@ -10,9 +11,11 @@ interface ButtonProps {
     text?: string
     icon?: ReactNode
     name?: string
+    disabled?: boolean
+    loading?: boolean
 }
 
-export const Button = ({ color = "default", type = "button", onClick = () => {}, title = "", text = "", icon, name = "" } : ButtonProps) => {
+export const Button = ({ color = "default", type = "button", onClick = () => {}, title = "", text = "", icon, name = "", disabled = false, loading = false } : ButtonProps) => {
     return (
         <button
             title={ (title ? title : (text ?? " ")) } type={type}
@@ -20,8 +23,9 @@ export const Button = ({ color = "default", type = "button", onClick = () => {},
             name={name}
             id={name}
             onClick={onClick}
+            disabled={disabled}
         >
-            {icon && icon} {text}
+            {loading && ( <Loading /> )} {icon && icon} {text}
         </button>
     );
 };
