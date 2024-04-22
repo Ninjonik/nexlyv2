@@ -21,12 +21,13 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
         const handleLoad = async () => {
             if(user){
                 localStorage.removeItem("user")
+                console.warn("DELETING SESSIONS")
                 await account.deleteSessions()
-                navigator.sendBeacon(`/api/deleteUser`,
-                    JSON.stringify({
-                        token: user.token
-                    })
-                );
+                // navigator.sendBeacon(`/api/deleteUser`,
+                //     JSON.stringify({
+                //         token: user.token
+                //     })
+                // );
                 loggedIn = true;
             } else {
                 console.info("no user found")
@@ -64,12 +65,13 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             console.info("removing cookies data")
             if(user){
                 localStorage.removeItem("user")
-                await account.deleteSessions()
-                navigator.sendBeacon(`/api/deleteUser`,
-                    JSON.stringify({
-                        token: user.token
-                    })
-                );
+                console.warn("DELETING SESSIONS ON EXIT")
+                account.deleteSessions()
+                // navigator.sendBeacon(`/api/deleteUser`,
+                //     JSON.stringify({
+                //         token: user.token
+                //     })
+                // );
             }
         };
         window.addEventListener('beforeunload', handleUnload);

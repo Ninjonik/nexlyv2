@@ -22,20 +22,17 @@ export const IndexForm = () => {
     const [form, setForm] = useState<IndexFormInterface | undefined>();
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const [joinLoading, setJoinLoading] = useState<boolean>(false);
     const router = useRouter();
 
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
 
-        setLoading(true)
-
         const eventSubmitter = (e.nativeEvent as SubmitEvent).submitter?.id;
         if(!eventSubmitter) return setLoading(false);
 
-        /* Create a new user */
-        const generatedToken =  generateRandomString();
-
         if(eventSubmitter === "joinRoom"){
+            setJoinLoading(true);
             const roomCode = form?.roomCode
             if(!roomCode) return setError("You must specify an invite code before joining a room.")
             /* Check if the desired room exists and is open for new users */
@@ -53,7 +50,7 @@ export const IndexForm = () => {
             )
             const resJson = await res.json();
             if(resJson?.error){
-                setLoading(false)
+                setJoinLoading(false);
                 return setError(resJson.error);
             }
 
@@ -78,7 +75,6 @@ export const IndexForm = () => {
                     },
                     body: JSON.stringify({
                         "roomCode": roomCode,
-                        "token": generatedToken,
                         "name": form?.name,
                         "avatar": form?.avatar,
                         "jwt": jwt
@@ -88,22 +84,23 @@ export const IndexForm = () => {
 
             const joinResJson = await joinRes.json();
             if(joinResJson?.error){
-                setLoading(false)
+                setJoinLoading(false);
                 return setError(joinResJson.error);
             }
 
             localStorage.setItem("user", JSON.stringify({
                 name: form?.name || "Anonymous",
                 avatar: form?.avatar,
-                token: generatedToken,
                 $id: joinResJson.newUser.$id,
             }));
 
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
-            return setLoading(false);
+            return setJoinLoading(false);
         }
 
         if(eventSubmitter === "createRoom"){
+
+            setLoading(false);
 
             try {
                 await account.deleteSessions()
@@ -123,7 +120,6 @@ export const IndexForm = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        "token": generatedToken,
                         "name": form?.name,
                         "avatar": form?.avatar,
                         "roomName": form?.roomName,
@@ -136,14 +132,13 @@ export const IndexForm = () => {
 
             const joinResJson = await joinRes.json();
             if(!joinResJson || !joinResJson?.roomCode){
-                setLoading(false)
+                setLoading(false);
                 return setError(joinResJson.error);
             }
 
             localStorage.setItem("user", JSON.stringify({
                 name: form?.name || "Anonymous",
                 avatar: form?.avatar,
-                token: generatedToken,
                 $id: joinResJson.newUser.$id,
             }));
 
@@ -152,7 +147,8 @@ export const IndexForm = () => {
             return setLoading(false);
         }
 
-        setLoading(false)
+        setLoading(false);
+        setJoinLoading(false);
 
     }, [form])
 
@@ -168,7 +164,12 @@ export const IndexForm = () => {
                     <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
                            setForm={setForm}/>
                     <AvatarPicker form={form} setForm={setForm} inputName={"avatar"}/>
-                    <Button color={"primary"} type={"submit"} name={"joinRoom"} text={"Join the room"}/>
+
+                    {joinLoading ? (
+                        <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Joining the room"}/>
+                    ) : (
+                        <Button color={"primary"} type={"submit"} name={"joinRoom"} text={"Join the room"}/>
+                    )}
                 </div>
                 <div className={"divider"}/>
                 <div className={"flex flex-col gap-4"}>
@@ -177,7 +178,7 @@ export const IndexForm = () => {
                     <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"}
                                   avatarText={"Select group avatar"}/>
                     {loading ? (
-                        <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={""}/>
+                        <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Creating a room"}/>
                     ) : (
                         <Button color={"primary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
                     )}

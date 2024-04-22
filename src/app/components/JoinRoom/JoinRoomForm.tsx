@@ -7,6 +7,7 @@ import React, {SyntheticEvent, useCallback, useState} from "react";
 import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
 import {account} from "@/app/utils/appwrite";
+import {useUserContext} from "@/app/utils/UserContext";
 
 export interface JoinRoomFormInterface {
     avatar: File,
@@ -23,14 +24,12 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
+    const { getUserData } = useUserContext();
 
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
 
         setLoading(true)
-
-        /* Create a new user */
-        const generatedToken =  generateRandomString();
 
         /* Check if the desired room exists and is open for new users */
         const res = await fetch(
@@ -72,7 +71,6 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                 },
                 body: JSON.stringify({
                     "roomCode": roomCode,
-                    "token": generatedToken,
                     "name": form?.name,
                     "avatar": form?.avatar,
                     "jwt": jwt
@@ -89,10 +87,10 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
         localStorage.setItem("user", JSON.stringify({
             name: form?.name || "Anonymous",
             avatar: form?.avatar,
-            token: generatedToken,
             $id: joinResJson.newUser.$id,
         }));
 
+        await getUserData();
         router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode, );
         router.refresh()
         setLoading(false)
@@ -111,7 +109,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                        setForm={setForm}/>
                 <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
                 {loading ? (
-                    <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={""}/>
+                    <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Joining the room"}/>
                 ) : (
                     <Button color={"primary"} text={"Join the room"} type={"submit"} />
                 )}

@@ -10,10 +10,12 @@ import {client, database, databases} from "@/app/utils/appwrite";
 interface MessageSectionProps {
     messages: MessageInterface[],
     setMessages: React.Dispatch<React.SetStateAction<MessageInterface[]>>
+    temporaryMessage: MessageInterface | null,
+    setTemporaryMessage: React.Dispatch<React.SetStateAction<MessageInterface | null>>
     room: Room
 }
 
-export const MessageSection = ({ messages, setMessages, room } : MessageSectionProps ) => {
+export const MessageSection = ({ messages, setMessages, room, temporaryMessage, setTemporaryMessage } : MessageSectionProps ) => {
 
     const [lastLoadedMessageId, setLastLoadedMessageId ] = useState<string | null>(null);
     const [hasMore, setHasMore] = useState<boolean>(true);
@@ -49,16 +51,21 @@ export const MessageSection = ({ messages, setMessages, room } : MessageSectionP
         fetchData();
 
         const unsubscribe = client.subscribe(`databases.${database}.collections.messages.documents`, response => {
-            // Callback will be executed on changes for all files.
-            console.log(response);
-            console.log(response.events);
+            // Check if a new message was created (message from other groups will not be shown since user doesn't have the permissions to even see them - no need to take care of this)
+            console.info("RESPONSE PAYLOAD: ", response.payload)
+            if(response.events.includes("databases.*.collections.messages.documents.*.create")){
+                const newMessagePayload = response.payload as MessageInterface
+                console.log(newMessagePayload, temporaryMessage)
+                if(temporaryMessage && temporaryMessage.author.$id === newMessagePayload.author.$id && temporaryMessage.message === newMessagePayload.message) setTemporaryMessage(null);
+                setMessages((prevMessages) => [newMessagePayload, ...prevMessages]);
+            }
         });
 
         return () => {
             unsubscribe();
         }
 
-    }, []);
+    }, [temporaryMessage]);
 
     console.info(messages, hasMore, lastLoadedMessageId);
 
@@ -73,6 +80,9 @@ export const MessageSection = ({ messages, setMessages, room } : MessageSectionP
             scrollableTarget="scrollableDiv"
             inverse={true}
         >
+            { temporaryMessage && (
+                <Message message={temporaryMessage} temporary={true} />
+            )}
             {
                 messages.map((message: MessageInterface, key: number) => (
                     <Message key={key} message={message} />

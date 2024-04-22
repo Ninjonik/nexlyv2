@@ -2,10 +2,13 @@
 
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import UserLocalStorageInterface from "@/app/utils/interfaces/UserLocalStorageInterface";
+import {account} from "@/app/utils/appwrite";
+import UserAuthInterface from "@/app/utils/interfaces/UserAuthInterface";
 
 interface UserContextState {
-    user: UserLocalStorageInterface | null;
-    setUser: React.Dispatch<React.SetStateAction<UserLocalStorageInterface | null>>;
+    user: UserAuthInterface | null;
+    setUser: React.Dispatch<React.SetStateAction<UserAuthInterface | null>>;
+    getUserData: () => void;
 }
 
 
@@ -24,23 +27,45 @@ export const useUserContext = () => {
 };
 
 export const UserContextProvider = ({ children }: UserContextProps) => {
-    const [user, setUser] = useState<UserLocalStorageInterface | null>(null);
+    const [user, setUser] = useState<UserAuthInterface | null>(null);
+
+    const getUserData = async () => {
+        try {
+            const acc = await account.get();
+            const userStorage = localStorage.getItem("user");
+            let avatar = "defaultAvatar";
+            if(userStorage){
+                const parsedUser = JSON.parse(userStorage) as UserLocalStorageInterface;
+                avatar = parsedUser.avatar
+            } else {
+                return console.info("no user found")
+            }
+            const updatedObject = {...acc, avatar: avatar};
+            setUser(updatedObject)
+            console.info("UPDATED USER OBJECT: ", updatedObject);
+        } catch (e) {
+            setUser(null);
+        }
+
+    }
 
     useEffect(() => {
 
-        const userStorage = localStorage.getItem("user")
-        if(userStorage){
-            const parsedUser = JSON.parse(userStorage) as UserLocalStorageInterface;
-            setUser(parsedUser)
-        } else {
-            setUser(null)
-            console.info("no user found")
-        }
+        getUserData()
 
-    }, []);
+        // const userStorage = localStorage.getItem("user")
+        // if(userStorage){
+        //     const parsedUser = JSON.parse(userStorage) as UserLocalStorageInterface;
+        //     setUser(parsedUser)
+        // } else {
+        //     setUser(null)
+        //     console.info("no user found")
+        // }
+
+    }, [account]);
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, getUserData }}>
             {children}
         </UserContext.Provider>
     );

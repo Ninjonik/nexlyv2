@@ -4,7 +4,7 @@ import {ID, Permission, Role} from "appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (roomCode: string, token: string, name: string, avatar: File, id: string) => {
+const apiHandler = async (roomCode: string, name: string, avatar: File, id: string) => {
     const roomQuery = await databases.listDocuments(
         database,
         "rooms",
@@ -25,7 +25,6 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
             {
                 name: name,
                 avatar: avatar,
-                token: token,
                 room: roomData.$id
             },
             [
@@ -41,9 +40,9 @@ const apiHandler = async (roomCode: string, token: string, name: string, avatar:
 }
 
 export async function PATCH(req: Request, res: Response) {
-    const { roomCode, token, name, avatar, jwt } = await req.json();
+    const { roomCode, name, avatar, jwt } = await req.json();
 
-    if(!roomCode || !token || !jwt){
+    if(!roomCode || !jwt){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 
@@ -54,5 +53,5 @@ export async function PATCH(req: Request, res: Response) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
 
-    return apiHandler(roomCode, token, name, avatar, account.$id);
+    return apiHandler(roomCode, name, avatar, account.$id);
 }

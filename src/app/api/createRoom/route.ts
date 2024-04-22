@@ -3,7 +3,7 @@ import {Query} from "node-appwrite";
 import {ID, Permission, Role} from "appwrite";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (token: string, name: string, avatar: File, roomName: string, roomDescription: string, roomAvatar: File, id: string) => {
+const apiHandler = async (name: string, avatar: File, roomName: string, roomDescription: string, roomAvatar: File, id: string) => {
 
     const generateUniqueRoomCode = async () => {
         let generatedCode = "";
@@ -47,7 +47,6 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
         {
             name: name,
             // avatar: avatar,
-            token: token,
             room: {
                 "$id": generatedCode,
                 name: roomName,
@@ -65,9 +64,9 @@ const apiHandler = async (token: string, name: string, avatar: File, roomName: s
 }
 
 export async function POST(req: Request, res: Response) {
-    const { token, name, avatar, roomName, roomDescription, roomAvatar, jwt } = await req.json();
+    const { name, avatar, roomName, roomDescription, roomAvatar, jwt } = await req.json();
 
-    if(!token || !jwt){
+    if(!jwt){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 
@@ -78,5 +77,5 @@ export async function POST(req: Request, res: Response) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
 
-    return apiHandler(token, name, avatar, roomName, roomDescription, roomAvatar, account.$id);
+    return apiHandler(name, avatar, roomName, roomDescription, roomAvatar, account.$id);
 }

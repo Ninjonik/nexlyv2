@@ -18,15 +18,16 @@ import Room from "@/app/utils/interfaces/RoomInterface";
 import {useUserContext} from "@/app/utils/UserContext";
 import User from "@/app/utils/interfaces/UserInterface";
 import Message from "@/app/utils/interfaces/MessageInterface";
+import MessageInterface from "@/app/utils/interfaces/MessageInterface";
 
 
 interface TextareaProps {
     className?: string,
     room: Room,
-    setMessages: Dispatch<SetStateAction<Message[]>>
+    setTemporaryMessage: React.Dispatch<React.SetStateAction<MessageInterface | null>>
 }
 
-export const Textarea = ({ className, room, setMessages } : TextareaProps ) => {
+export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProps ) => {
 
     const ref = useRef<HTMLTextAreaElement>(null);
     const [text, setText] = useState<string>("")
@@ -66,6 +67,27 @@ export const Textarea = ({ className, room, setMessages } : TextareaProps ) => {
         console.info("USER ID: ", user?.$id)
         console.info("ACCOUNT ID: ", acc.$id)
         console.info("MESSAGE: ", message)
+
+        if(!user) return null
+
+        setTemporaryMessage({
+            $id: "tempMessage",
+            $createdAt: new Date().toString(),
+            $updatedAt: new Date().toString(),
+            $permissions: [],
+            author: {
+                ...user,
+                $permissions: [],
+                $databaseId: database,
+                $collectionId: "users",
+            },
+            room: room,
+            message: message,
+            attachments: [], // TODO: make the attachments work finally ffs
+            $databaseId: database,
+            $collectionId: "messages",
+        });
+
         const res = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/sendMessage`,
             {
@@ -83,14 +105,13 @@ export const Textarea = ({ className, room, setMessages } : TextareaProps ) => {
         )
         const resJson = await res.json();
         if(resJson?.error || !resJson?.data){
-            return
+            return setTemporaryMessage(null);
         }
 
-        const newMessage: Message = resJson.data
-        setMessages((prevMessages) => [newMessage, ...prevMessages])
-        setText("")
+        const newMessage: Message = resJson.data;
+        setText("");
 
-        console.info(newMessage)
+        console.info(newMessage);
     }, [room])
 
     return (
