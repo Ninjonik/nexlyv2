@@ -31,6 +31,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
 
     const ref = useRef<HTMLTextAreaElement>(null);
     const [text, setText] = useState<string>("")
+    const [submitting, setSubmitting] = useState<boolean>(false);
     const { user, setUser } = useUserContext()
 
     // useEffect(() => {
@@ -61,6 +62,9 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
     }, []);
 
     const handleSubmit = useCallback(async (message: string) => {
+
+        setText("");
+        if(submitting) return;
 
         const jwt = await account.createJWT()
         const acc = await account.get()
@@ -109,10 +113,8 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
         }
 
         const newMessage: Message = resJson.data;
-        setText("");
 
-        console.info(newMessage);
-    }, [room])
+    }, [room, submitting])
 
     return (
         <form className={"w-full flex justify-between bg-base-300 rounded-lg px-2 py-1"} onSubmit={(e) => e.preventDefault()}>

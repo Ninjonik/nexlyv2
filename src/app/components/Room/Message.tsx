@@ -30,7 +30,7 @@ export const Message = ({ message, temporary } : MessageProps) => {
 
         )
         setAvatar(avatar.toString());
-    }, [user]);
+    }, [user, message]);
 
     if(own === null) return <Loading />;
 

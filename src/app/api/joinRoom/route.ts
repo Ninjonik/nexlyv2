@@ -14,8 +14,6 @@ const apiHandler = async (roomCode: string, name: string, avatar: File, id: stri
         ]
     ) as { documents: Room[] }
 
-    console.info(roomQuery, roomQuery.documents)
-
     if (roomQuery && roomQuery.documents && roomQuery.documents[0]) {
         const roomData = roomQuery.documents[0]
         const newUser = await databases.createDocument(

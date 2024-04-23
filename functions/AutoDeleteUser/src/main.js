@@ -21,11 +21,11 @@ export default async ({
 
 
     if (req.method === 'POST') {
-        const removedUserId = req.body.$id;
+        const removedUserId = req.body.userId;
 
         try {
             console.log(req.body);
-            console.log(req.body.$id);
+            console.log(req.body.userId);
             await database.deleteDocument('nexly', 'users', removedUserId);
         } catch (err) {
             error('Error deleting user record:', err);

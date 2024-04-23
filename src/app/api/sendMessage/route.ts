@@ -34,6 +34,7 @@ const apiHandler = async ( message: string, attachments: [], roomId: string, use
             },
             permissions
         );
+
         return Response.json({ data: result })
     } catch (error) {
         console.error('Error creating a message:', error);
@@ -55,6 +56,8 @@ export async function POST(req: Request, res: Response) {
     if(!account || !account.$id) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
+
+    console.log("CREATING MESSAGE FOR ACC: ", account.name)
 
     return await apiHandler(message, attachments, roomId, account.$id);
 }

@@ -51,7 +51,15 @@ const apiHandler = async (name: string, avatar: File, roomName: string, roomDesc
                 "$id": generatedCode,
                 name: roomName,
                 closed: false,
-                description: roomDescription,}
+                description: roomDescription,
+                "$permissions": [
+                    Permission.read(Role.user(id)),
+                    Permission.create(Role.user(id)),
+                    Permission.update(Role.user(id)),
+                    Permission.delete(Role.user(id)),
+                    Permission.read(Role.any()),
+                ]
+            }
         },
         [
             Permission.read(Role.any())

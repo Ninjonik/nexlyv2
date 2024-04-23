@@ -28,6 +28,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
         "messages",
         [
             Query.equal("room", room.$id),
+            Query.orderDesc("$updatedAt"),
             Query.limit(10),
         ]
     );
@@ -70,7 +71,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
                         <Anchor icon={<FaPlus/>} title={"Invite new people"} hideTitle={true} size={"3xl"}/>
                     </div>
 
-                    <div className={"flex flex-col gap-3"}>
+                    <div className={"flex flex-col gap-3 max-h-96 overflow-y-scroll no-scrollbar"}>
                         {room.users.map((user, index) => (
                             <ListUser key={index} user={user}/>
                         ))}

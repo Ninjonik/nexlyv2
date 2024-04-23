@@ -7,6 +7,7 @@ import React, {SyntheticEvent, useCallback, useState} from "react";
 import {account} from "@/app/utils/appwrite";
 import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
+import {useUserContext} from "@/app/utils/UserContext";
 
 export interface IndexFormInterface {
     name: string,
@@ -24,6 +25,7 @@ export const IndexForm = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [joinLoading, setJoinLoading] = useState<boolean>(false);
     const router = useRouter();
+    const { getUserData } = useUserContext();
 
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
@@ -94,6 +96,7 @@ export const IndexForm = () => {
                 $id: joinResJson.newUser.$id,
             }));
 
+            await getUserData();
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
             return setJoinLoading(false);
         }
@@ -143,6 +146,7 @@ export const IndexForm = () => {
             }));
 
             const roomCode: string = joinResJson.roomCode
+            await getUserData();
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
             return setLoading(false);
         }

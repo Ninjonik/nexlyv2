@@ -13,8 +13,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
     const {user, setUser} = useUserContext();
     const router = useRouter();
 
-    useEffect(() => {
-
+    const middlewareFunction = async () => {
         let loggedIn = false;
 
         /* Runs on initial page load */
@@ -39,8 +38,6 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             const roomPattern = /^\/room\/[^\/]+$/; // Matches "/room/[x]"
             const genericPattern = /^\/[^\/]+$/; // Matches "/[x]"
 
-            console.log(path)
-
             if (roomPattern.test(path)) {
                 // If the user is on a "/room/[x]" path, no need to redirect
                 console.info("User is on a valid path.");
@@ -54,11 +51,16 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             }
         };
 
+        await handleLoad()
+
         if(!loggedIn) redirectUser();
 
         setLoading(false);
+    }
 
-        handleLoad()
+    useEffect(() => {
+
+        middlewareFunction()
 
         /* RUN ON PAGE EXIT */
         const handleUnload = async () => {
@@ -80,7 +82,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
         return () => {
             window.removeEventListener('beforeunload', handleUnload);
         };
-    }, [user]);
+    }, []);
 
     if(loading) return <LoadingFullscreen />;
 
