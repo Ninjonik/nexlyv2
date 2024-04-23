@@ -103,7 +103,7 @@ export const IndexForm = () => {
 
         if(eventSubmitter === "createRoom"){
 
-            setLoading(false);
+            setLoading(true);
 
             try {
                 await account.deleteSessions()

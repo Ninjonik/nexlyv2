@@ -5,6 +5,7 @@ export default interface Room {
     name: string;
     closed: boolean;
     description: string;
+    call: boolean;
     $id: string;
     $createdAt: string;
     $updatedAt: string;

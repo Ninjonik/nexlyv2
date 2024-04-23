@@ -12,6 +12,7 @@ import {RoomMain} from "@/app/components/Room/RoomMain";
 import {Query} from "node-appwrite";
 import Message from "@/app/utils/interfaces/MessageInterface";
 import LoadingRoom from "@/app/[roomCode]/loading";
+import {RoomActionButtons} from "@/app/components/Room/RoomActionButtons";
 
 export const dynamic = 'force-dynamic'
 
@@ -49,15 +50,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
                 </div>
             </header>
 
-            <aside
-                className={"col-span-2 row-span-1 bg-base-100 flex justify-end py-2 pr-8"}>
-                <div className={"flex flex-row justify-end gap-4"}>
-                    <Anchor title={"Call"} hideTitle={true} icon={<FaPhone/>}/>
-                    <Anchor title={"Hide sidebar"} hideTitle={true} icon={<FaUsers/>}/>
-                    <Anchor title={"Leave the room"} hideTitle={true} icon={<FaArrowRight/>}/>
-                    <ThemeSelector/>
-                </div>
-            </aside>
+            <RoomActionButtons room={room} />
 
             <RoomMain room={room} messagesProps={messages} />
 

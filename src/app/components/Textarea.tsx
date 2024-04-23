@@ -81,6 +81,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
             $permissions: [],
             author: {
                 ...user,
+                room: room,
                 $permissions: [],
                 $databaseId: database,
                 $collectionId: "users",
