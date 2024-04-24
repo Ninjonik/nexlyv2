@@ -9,6 +9,7 @@ import formatTimestampToDate from "@/app/utils/formatTimestampToDate";
 import formatTimestampToTime from "@/app/utils/formatTimestampToTime";
 import {useUserContext} from "@/app/utils/UserContext";
 import {Loading} from "@/app/components/Loading";
+import getAvatar from "@/app/utils/getAvatar";
 
 interface MessageProps {
     message: MessageInterface;
@@ -24,13 +25,11 @@ export const Message = ({ message, temporary } : MessageProps) => {
         if(user) {
             if(message.author.$id == user.$id) setOwn(true);
         }
-        const avatar = storage.getFilePreview(
-            "avatars",
-            "defaultAvatar"
+    }, [user, message.author.$id]);
 
-        )
-        setAvatar(avatar.toString());
-    }, [user, message]);
+    useEffect(() => {
+        setAvatar(getAvatar(message.author.avatar));
+    }, [message.author.avatar]);
 
     if(own === null) return <Loading />;
 

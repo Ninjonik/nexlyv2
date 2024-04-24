@@ -6,8 +6,9 @@ import {Button} from "@/app/components/Button";
 import React, {SyntheticEvent, useCallback, useState} from "react";
 import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
-import {account} from "@/app/utils/appwrite";
+import {account, storage} from "@/app/utils/appwrite";
 import {useUserContext} from "@/app/utils/UserContext";
+import {ID} from "appwrite";
 
 export interface JoinRoomFormInterface {
     avatar: File,
@@ -62,6 +63,20 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
         await account.updateName(form?.name || "Anonymous");
         const jwt = await account.createJWT();
 
+        let avatarValue = "defaultAvatar";
+        if(form?.avatar){
+            try {
+                const avatarRes = await storage.createFile(
+                    "avatars",
+                    ID.unique(),
+                    form.avatar
+                )
+                avatarValue = avatarRes.$id;
+            } catch (e) {
+                console.warn("Invalid avatar file type.");
+            }
+        }
+
         const joinRes = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
             {
@@ -72,7 +87,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                 body: JSON.stringify({
                     "roomCode": roomCode,
                     "name": form?.name,
-                    "avatar": form?.avatar,
+                    "avatar": avatarValue,
                     "jwt": jwt
                 }),
             }
@@ -86,7 +101,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
 
         localStorage.setItem("user", JSON.stringify({
             name: form?.name || "Anonymous",
-            avatar: form?.avatar,
+            avatar: avatarValue,
             $id: joinResJson.newUser.$id,
         }));
 

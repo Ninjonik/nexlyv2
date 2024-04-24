@@ -5,10 +5,6 @@ import {LiveKitRoom, PreJoin} from "@livekit/components-react";
 import '@livekit/components-styles';
 import {Button} from "@/app/components/Button";
 import VideoConference from "@/app/components/Room/VideoConference";
-import {CiMaximize1, CiMinimize1} from "react-icons/ci";
-import {TbMaximize} from "react-icons/tb";
-import {FiMinimize} from "react-icons/fi";
-import {FaPlus} from "react-icons/fa";
 
 interface RoomCallProps {
     room: Room,

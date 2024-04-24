@@ -13,6 +13,7 @@ import {Query} from "node-appwrite";
 import Message from "@/app/utils/interfaces/MessageInterface";
 import LoadingRoom from "@/app/[roomCode]/loading";
 import {RoomActionButtons} from "@/app/components/Room/RoomActionButtons";
+import getAvatar from "@/app/utils/getAvatar";
 
 export const dynamic = 'force-dynamic'
 
@@ -39,7 +40,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
         <main className={"h-full w-full grid grid-cols-9 grid-rows-12 text-base-content"}>
             <header className={"col-span-7 bg-base-100 row-span-1 flex justify-between py-2 px-8"}>
                 <div className={"flex flex-row justify-center items-center gap-4"}>
-                    <Avatar/>
+                    <Avatar avatar={getAvatar(room.avatar)} />
                     <div className={"flex flex-col justify-start gap-2"}>
                         <h1 className={"text-2xl font-bold"}>{room.name}</h1>
                         <h3>{room.users.length} Members</h3>

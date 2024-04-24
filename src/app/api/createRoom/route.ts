@@ -1,9 +1,8 @@
 import {database, databases} from "@/app/utils/appwrite-server";
-import {Query} from "node-appwrite";
 import {ID, Permission, Role} from "appwrite";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (name: string, avatar: File, roomName: string, roomDescription: string, roomAvatar: File, id: string) => {
+const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomName: string, roomDescription: string, roomAvatar: string = "defaultAvatar", id: string) => {
 
     const generateUniqueRoomCode = async () => {
         let generatedCode = "";
@@ -46,11 +45,12 @@ const apiHandler = async (name: string, avatar: File, roomName: string, roomDesc
         id,
         {
             name: name,
-            // avatar: avatar,
+            avatar: avatar,
             room: {
                 "$id": generatedCode,
                 name: roomName,
                 closed: false,
+                avatar: roomAvatar,
                 description: roomDescription,
                 "$permissions": [
                     Permission.read(Role.user(id)),

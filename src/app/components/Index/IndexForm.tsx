@@ -4,10 +4,11 @@ import {Input} from "@/app/components/Input";
 import {AvatarPicker} from "@/app/components/AvatarPicker";
 import {Button} from "@/app/components/Button";
 import React, {SyntheticEvent, useCallback, useState} from "react";
-import {account} from "@/app/utils/appwrite";
+import {account, storage} from "@/app/utils/appwrite";
 import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
 import {useUserContext} from "@/app/utils/UserContext";
+import {ID} from "appwrite";
 
 export interface IndexFormInterface {
     name: string,
@@ -36,7 +37,10 @@ export const IndexForm = () => {
         if(eventSubmitter === "joinRoom"){
             setJoinLoading(true);
             const roomCode = form?.roomCode
-            if(!roomCode) return setError("You must specify an invite code before joining a room.")
+            if(!roomCode) {
+                setJoinLoading(false);
+                return setError("You must specify an invite code before joining a room.")
+            }
             /* Check if the desired room exists and is open for new users */
             const res = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/checkRoom`,
@@ -68,6 +72,20 @@ export const IndexForm = () => {
             await account.updateName(form?.name || "Anonymous")
             const jwt = await account.createJWT()
 
+            let avatarValue = "defaultAvatar";
+            if(form?.avatar){
+                try {
+                    const avatarRes = await storage.createFile(
+                        "avatars",
+                        ID.unique(),
+                        form.avatar
+                    )
+                    avatarValue = avatarRes.$id;
+                } catch (e) {
+                    console.warn("Invalid avatar file type.");
+                }
+            }
+
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
                 {
@@ -78,7 +96,7 @@ export const IndexForm = () => {
                     body: JSON.stringify({
                         "roomCode": roomCode,
                         "name": form?.name,
-                        "avatar": form?.avatar,
+                        "avatar": avatarValue,
                         "jwt": jwt
                     }),
                 }
@@ -92,7 +110,7 @@ export const IndexForm = () => {
 
             localStorage.setItem("user", JSON.stringify({
                 name: form?.name || "Anonymous",
-                avatar: form?.avatar,
+                avatar: avatarValue,
                 $id: joinResJson.newUser.$id,
             }));
 
@@ -115,6 +133,34 @@ export const IndexForm = () => {
             await account.updateName(form?.name || "Anonymous")
             const jwt = await account.createJWT();
 
+            let avatarValue = "defaultAvatar";
+            if(form?.avatar){
+                try {
+                    const avatarRes = await storage.createFile(
+                        "avatars",
+                        ID.unique(),
+                        form.avatar
+                    )
+                    avatarValue = avatarRes.$id;
+                } catch (e) {
+                    console.warn("Invalid avatar file type.");
+                }
+            }
+
+            let RoomAvatarValue = "defaultAvatar";
+            if(form?.roomAvatar){
+                try {
+                    const RoomAvatarRes = await storage.createFile(
+                        "avatars",
+                        ID.unique(),
+                        form.roomAvatar
+                    )
+                    RoomAvatarValue = RoomAvatarRes.$id;
+                } catch (e) {
+                    console.warn("Invalid room avatar file type.");
+                }
+            }
+
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/createRoom`,
                 {
@@ -124,10 +170,10 @@ export const IndexForm = () => {
                     },
                     body: JSON.stringify({
                         "name": form?.name,
-                        "avatar": form?.avatar,
+                        "avatar": avatarValue,
                         "roomName": form?.roomName,
                         "roomDescription": form?.roomDescription,
-                        "roomAvatar": form?.roomAvatar,
+                        "roomAvatar": RoomAvatarValue,
                         "jwt": jwt
                     }),
                 }
@@ -141,7 +187,7 @@ export const IndexForm = () => {
 
             localStorage.setItem("user", JSON.stringify({
                 name: form?.name || "Anonymous",
-                avatar: form?.avatar,
+                avatar: avatarValue,
                 $id: joinResJson.newUser.$id,
             }));
 

@@ -4,7 +4,7 @@ import {ID, Permission, Role} from "appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (roomCode: string, name: string, avatar: File, id: string) => {
+const apiHandler = async (roomCode: string, name: string, avatar: string, id: string) => {
     const roomQuery = await databases.listDocuments(
         database,
         "rooms",
