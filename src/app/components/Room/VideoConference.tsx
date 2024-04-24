@@ -1,5 +1,7 @@
+"use client"
+
 import {
-    CarouselLayout, ConnectionStateToast, DisconnectButton, FocusLayout,
+    CarouselLayout, ConnectionStateToast, ControlBar, DisconnectButton, FocusLayout,
     FocusLayoutContainer,
     GridLayout,
     isTrackReference, LayoutContextProvider, ParticipantTile, RoomAudioRenderer, StartAudio,
@@ -20,13 +22,13 @@ interface ConferenceProps extends VideoConferenceProps {
 }
 
 export default function VideoConference({
-                                            chatMessageFormatter,
-                                            chatMessageDecoder,
-                                            chatMessageEncoder,
-                                            SettingsComponent,
-                                            onDisconnectedFn,
-                                            ...props
-                                        }: ConferenceProps) {
+                                    chatMessageFormatter,
+                                    chatMessageDecoder,
+                                    chatMessageEncoder,
+                                    SettingsComponent,
+                                    onDisconnectedFn,
+                                    ...props
+                                }: ConferenceProps) {
     const [widgetState, setWidgetState] = React.useState<WidgetState>({
         showChat: false,
         unreadMessages: 0,
@@ -82,28 +84,27 @@ export default function VideoConference({
     ]);
 
     return (
-        <div className="h-full w-full flex items-stretch" {...props}>
+        <div className="lk-video-conference" {...props}>
             {isWeb() && (
                 <LayoutContextProvider
                     value={layoutContext}
                     // onPinChange={handleFocusStateChange}
                     onWidgetChange={widgetUpdate}
                 >
-                    <div className="flex flex-col h-full w-full">
-                        {/* TODO: FIX TILES NOT BEING SHOWN FOR SOME REASON - !! they are not shown due to the onSubmit in RoomCall.tsx on <Prejoin /> !! */}
+                    <div className="lk-video-conference-inner">
                         {!focusTrack ? (
-                            <div className="grid-layout-wrapper flex items-center justify-center w-full h-full">
+                            <div className="lk-grid-layout-wrapper">
                                 <GridLayout tracks={tracks}>
-                                    <ParticipantTile />
+                                    <ParticipantTile/>
                                 </GridLayout>
                             </div>
                         ) : (
-                            <div className="flex items-stretch justify-center w-full h-full">
+                            <div className="lk-focus-layout-wrapper">
                                 <FocusLayoutContainer>
                                     <CarouselLayout tracks={carouselTracks}>
-                                        <ParticipantTile />
+                                        <ParticipantTile/>
                                     </CarouselLayout>
-                                    {focusTrack && <FocusLayout trackRef={focusTrack} />}
+                                    {focusTrack && <FocusLayout trackRef={focusTrack}/>}
                                 </FocusLayoutContainer>
                             </div>
                         )}
@@ -117,17 +118,16 @@ export default function VideoConference({
                     </div>
                     {SettingsComponent && (
                         <div
-                            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 p-3 bg-base-100 rounded-lg border border-base-200 shadow-lg min-w-1/2 min-h-1/2"
-                            style={{ display: widgetState.showSettings ? 'block' : 'none' }}
+                            className="lk-settings-menu-modal"
+                            style={{display: widgetState.showSettings ? 'block' : 'none'}}
                         >
-                            <SettingsComponent />
+                            <SettingsComponent/>
                         </div>
                     )}
                 </LayoutContextProvider>
             )}
-            <RoomAudioRenderer />
+            <RoomAudioRenderer/>
             <ConnectionStateToast />
         </div>
     );
-
 }

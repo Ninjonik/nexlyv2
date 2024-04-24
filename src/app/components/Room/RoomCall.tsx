@@ -5,6 +5,10 @@ import {LiveKitRoom, PreJoin} from "@livekit/components-react";
 import '@livekit/components-styles';
 import {Button} from "@/app/components/Button";
 import VideoConference from "@/app/components/Room/VideoConference";
+import {CiMaximize1, CiMinimize1} from "react-icons/ci";
+import {TbMaximize} from "react-icons/tb";
+import {FiMinimize} from "react-icons/fi";
+import {FaPlus} from "react-icons/fa";
 
 interface RoomCallProps {
     room: Room,
@@ -16,11 +20,13 @@ export const RoomCall = ({ room } : RoomCallProps) => {
     const [token, setToken] = useState<string>("");
     const [inCall, setInCall] = useState<boolean>(false);
     const [hideCall, setHideCall] = useState<boolean>(false);
+    const [fullscreen, setFullscreen] = useState<boolean>(false);
 
     const onDisconnectedFn = async () => {
 
         try {
-            setInCall(false)
+            setHideCall(true);
+            setInCall(false);
 
             const response = await fetch(`/api/checkCallStatus?room=${room.$id}`, {
                 method: 'GET',
@@ -57,24 +63,42 @@ export const RoomCall = ({ room } : RoomCallProps) => {
     if(!user || !token || !room.call) return "";
 
     return (
-        <section className={"bg-base-200 flex flex-col gap-6 max-h-3/5 w-full border-r-2 border-t-2 border-primary"} id="scrollableDiv">
+        <section className={"bg-base-200 flex flex-col gap-6 h-full w-full border-r-2 border-t-2 border-primary"} id="scrollableDiv">
 
             {!hideCall ? (
                 inCall ? (
-                    <LiveKitRoom
-                        video={true}
-                        audio={true}
-                        token={token}
-                        serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-                        data-lk-theme="default"
-                        className='flex flex-col h-full w-full'
-                    >
-                        <VideoConference onDisconnectedFn={onDisconnectedFn} />
-                    </LiveKitRoom>
+                    <div className={`flex flex-col gap-[1dvw] bg-light transition-all duration-100 ${fullscreen ? 'absolute w-[100dvw] h-[100dvh] top-0 left-0 z-50' : 'relative w-full h-full'}`}>
+                        <LiveKitRoom
+                            video={false}
+                            audio={false}
+                            connect={inCall}
+                            token={token}
+                            serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+                            data-lk-theme="default"
+                            className='flex flex-col h-full'
+                            onDisconnected={onDisconnectedFn}
+                        >
+                            <VideoConference onDisconnectedFn={onDisconnectedFn} />
+                            <button
+                                className='h-[2dvw] w-[2dvw] p-[1dvw] text-lightly hover:text-white transition-all flex justify-center items-center text-center rounded-xl absolute right-[0.5dvw] bottom-[0.5dvw]'
+                                onClick={() => setFullscreen(!fullscreen)}>
+                                <label className="btn btn-circle swap swap-rotate">
+
+                                    {fullscreen ? (
+                                        <div>MIN</div>
+                                    ) : (
+                                        <div>MAX</div>
+                                    )}
+
+                                </label>
+                            </button>
+                        </LiveKitRoom>
+                    </div>
                 ) : (
                     <div className={"flex flex-col h-full py-4 px-96 gap-4"} data-lk-theme="default">
-                        <PreJoin onSubmit={() => setInCall(true)} userLabel={user.name} />
-                        <Button color={"secondary"} text={"Hide call"} title={"Hides the call"} onClick={() => setHideCall(true)} />
+                        <PreJoin onSubmit={() => setInCall(true)} userLabel={user.name}/>
+                        <Button color={"secondary"} text={"Hide call"} title={"Hides the call"}
+                                onClick={() => setHideCall(true)}/>
                     </div>
                 )
             ) : (
