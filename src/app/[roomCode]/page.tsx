@@ -14,6 +14,7 @@ import Message from "@/app/utils/interfaces/MessageInterface";
 import LoadingRoom from "@/app/[roomCode]/loading";
 import {RoomActionButtons} from "@/app/components/Room/RoomActionButtons";
 import getAvatar from "@/app/utils/getAvatar";
+import {InvitePeople} from "@/app/components/Room/InvitePeople";
 
 export const dynamic = 'force-dynamic'
 
@@ -56,13 +57,16 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
             <RoomMain room={room} messagesProps={messages} />
 
             <aside className={"row-span-11 col-span-2 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8"}>
-                <h2 className={"font-bold text-3xl"}>{room.name}</h2>
+                <div className={"flex flex-col gap-2"}>
+                    <h2 className={"font-bold text-3xl"}>{room.name}</h2>
+                    <h3 className={"font-bold text-xl"}>{room.description}</h3>
+                </div>
 
                 <div className={"flex flex-col gap-4"}>
                     <div className={"flex flex-row justify-between items-center"}>
                         <h2 className={"font-bold text-2xl flex flex-row justify-center items-center text-center gap-2"}>{
                             <FaUser/>} Members ({room.users.length})</h2>
-                        <Anchor icon={<FaPlus/>} title={"Invite new people"} hideTitle={true} size={"3xl"}/>
+                        <InvitePeople roomId={room.$id} />
                     </div>
 
                     <div className={"flex flex-col gap-3 max-h-96 overflow-y-scroll no-scrollbar"}>
