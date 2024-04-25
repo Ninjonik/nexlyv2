@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import {ClientWrapper} from "@/app/ClientWrapper";
 import {UserContextProvider} from "@/app/utils/UserContext";
+import 'react-photo-view/dist/react-photo-view.css';
 
 export const metadata: Metadata = {
   title: "Nexly",

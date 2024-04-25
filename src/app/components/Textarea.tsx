@@ -155,6 +155,22 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
         setAttachments(newAttachments);
     }, [attachments]);
 
+    const handlePaste = useCallback(async (
+        event: React.ClipboardEvent<HTMLTextAreaElement>,
+    ) => {
+        const items = event.clipboardData.items;
+        for (const item of items) {
+            if (item.type.indexOf("image") === 0) {
+                event.preventDefault();
+                const file = item.getAsFile();
+                if (file) {
+                    setAttachments((prevAttachments: File[]) => [...prevAttachments, file])
+                }
+                return;
+            }
+        }
+    }, []);
+
     return (
         <div className={"w-full flex flex-col bg-base-300 rounded-lg px-2 py-1"}>
             <ul className={"flex flex-row gap-4"}>
@@ -203,6 +219,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                         ref={ref}
                         value={text}
                         rows={1}
+                        onPaste={handlePaste}
                         onChange={(e) => setText(e.target.value)}
                     />
                 </div>

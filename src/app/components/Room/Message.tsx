@@ -17,6 +17,7 @@ import {Models} from "appwrite";
 import {Anchor} from "@/app/components/Anchor";
 import {AiOutlineDownload} from "react-icons/ai";
 import getFileDownload from "@/app/utils/getFileDownloadLink";
+import {PhotoProvider, PhotoView} from "react-photo-view";
 
 interface MessageProps {
     message: MessageInterface;
@@ -77,11 +78,17 @@ export const Message = ({ message, temporary } : MessageProps) => {
                                 {preview && file && extension && (
                                     <>
                                         {["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"].includes(file.mimeType) ? (
-                                            <img
-                                                className="rounded-md ease-in object-fit"
-                                                alt={file.name}
-                                                src={preview}
-                                            />
+                                            <PhotoProvider>
+                                                <PhotoView key={index} src={preview}>
+                                                    <img
+                                                        className="rounded-md ease-in object-fit"
+                                                        alt={file.name}
+                                                        src={preview}
+                                                    />
+                                                    </PhotoView>
+                                            </PhotoProvider>
+                                            /* TODO: Make it so the photoview arrows will actually work */
+                                            /* TODO: Fix it so the FileIcon doesnt get stuck inside of a tall image above */
                                         ) : (
                                             <FileIcon extension={extension} {...(defaultStyles[extension as DefaultExtensionType] || defaultStyles.png)} />
                                         )}
