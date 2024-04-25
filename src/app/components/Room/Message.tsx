@@ -2,7 +2,7 @@
 
 import {Avatar} from "@/app/components/Avatar";
 import MessageInterface from "@/app/utils/interfaces/MessageInterface";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import UserLocalStorageInterface from "@/app/utils/interfaces/UserLocalStorageInterface";
 import {storage} from "@/app/utils/appwrite";
 import formatTimestampToDate from "@/app/utils/formatTimestampToDate";
@@ -10,6 +10,13 @@ import formatTimestampToTime from "@/app/utils/formatTimestampToTime";
 import {useUserContext} from "@/app/utils/UserContext";
 import {Loading} from "@/app/components/Loading";
 import getAvatar from "@/app/utils/getAvatar";
+import getFileData, {getFileDataResult} from "@/app/utils/getFileData";
+import {DefaultExtensionType, defaultStyles, FileIcon} from "react-file-icon";
+import Image from "next/image";
+import {Models} from "appwrite";
+import {Anchor} from "@/app/components/Anchor";
+import {AiOutlineDownload} from "react-icons/ai";
+import getFileDownload from "@/app/utils/getFileDownloadLink";
 
 interface MessageProps {
     message: MessageInterface;
@@ -20,6 +27,7 @@ export const Message = ({ message, temporary } : MessageProps) => {
     const [own, setOwn] = useState<boolean | null>(false);
     const [avatar, setAvatar] = useState<string | undefined>(undefined);
     const {user, setUser} = useUserContext();
+    const [attachmentsData, setAttachmentsData] = useState<getFileDataResult[]>([]);
 
     useEffect(() => {
         if(user) {
@@ -28,8 +36,23 @@ export const Message = ({ message, temporary } : MessageProps) => {
     }, [user, message.author.$id]);
 
     useEffect(() => {
+        console.log("AVATAAAAAAAAR: ", message.author.avatar);
         setAvatar(getAvatar(message.author.avatar));
     }, [message.author.avatar]);
+
+    useEffect(() => {
+        const fetchAttachmentsData = async () => {
+            const attachmentsData = await Promise.all(message.attachments.map(async (attachmentId: string) => {
+                const { preview, file, extension } = await getFileData("attachments", attachmentId);
+                if (!preview || !file || !extension) return null;
+                return { preview, file, extension };
+            }));
+            setAttachmentsData(attachmentsData.filter(Boolean) as getFileDataResult[]);
+        };
+
+
+        fetchAttachmentsData();
+    }, [message.attachments]);
 
     if(own === null) return <Loading />;
 
@@ -41,9 +64,39 @@ export const Message = ({ message, temporary } : MessageProps) => {
                     <span className={`text-2xl font-bold ${own && "order-2"}`}>{message.author.name}</span>
                     <span>{formatTimestampToDate(message.$updatedAt)} {formatTimestampToTime(message.$updatedAt)}</span>
                 </div>
-                <div className={`${own ? "rounded-l-lg bg-primary text-base-100" : "rounded-r-lg bg-base-300"} rounded-b-lg w-full p-1`}>
-                    {message.message}
-                </div>
+                {message.message && (
+                    <div
+                        className={`${own ? "rounded-l-lg bg-primary text-base-100" : "rounded-r-lg bg-base-300"} rounded-b-lg w-full p-1`}>
+                        {message.message}
+                    </div>
+                )}
+                {attachmentsData.length > 0 && (
+                    <div className={"flex flex-col gap-2"}>
+                        {attachmentsData.map(({ preview, file, extension }, index) => (
+                            <div key={index} className={"max-h-96 max-w-96 relative pr-16"}>
+                                {preview && file && extension && (
+                                    <>
+                                        {["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"].includes(file.mimeType) ? (
+                                            <img
+                                                className="rounded-md ease-in object-fit"
+                                                alt={file.name}
+                                                src={preview}
+                                            />
+                                        ) : (
+                                            <FileIcon extension={extension} {...(defaultStyles[extension as DefaultExtensionType] || defaultStyles.png)} />
+                                        )}
+                                        <div className={"bottom-0 right-0 absolute"}>
+                                            <Anchor title={"Download the file"} hideTitle={true} icon={<AiOutlineDownload/>} href={getFileDownload("attachments", file?.$id)} download={true}/>
+                                        </div>
+                                    </>
+
+                                )}
+
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             </div>
         </div>
     );

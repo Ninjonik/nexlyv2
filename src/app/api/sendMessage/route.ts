@@ -3,7 +3,7 @@ import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-j
 import {ID, Permission, Role} from "node-appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 
-const apiHandler = async ( message: string, attachments: [], roomId: string, userId: string ) => {
+const apiHandler = async ( message: string, attachments: string[], roomId: string, userId: string ) => {
 
     try {
         const roomData: Room = await databases.getDocument(
@@ -30,7 +30,8 @@ const apiHandler = async ( message: string, attachments: [], roomId: string, use
             {
                 room: roomId,
                 author: userId,
-                message: message
+                message: message,
+                attachments: attachments
             },
             permissions
         );
@@ -46,7 +47,7 @@ const apiHandler = async ( message: string, attachments: [], roomId: string, use
 export async function POST(req: Request, res: Response) {
     const { jwt, message, attachments, roomId } = await req.json();
 
-    if(!jwt || !message || !roomId){
+    if(!jwt || !roomId || (!message && !attachments && attachments.length < 1)){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 
