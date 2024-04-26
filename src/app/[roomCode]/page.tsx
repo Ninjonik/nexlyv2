@@ -1,9 +1,7 @@
 import React from 'react';
 import {Avatar} from "@/app/components/Avatar";
 import RoomInterface from "@/app/utils/interfaces/RoomInterface";
-import {FaPhone, FaUsers, FaArrowRight, FaUser, FaPlus} from 'react-icons/fa';
-import {Anchor} from "@/app/components/Anchor";
-import {ThemeSelector} from "@/app/components/ThemeSelector";
+import {FaUser} from 'react-icons/fa';
 import {ListUser} from "@/app/components/Room/ListUser";
 import {databases} from "@/app/utils/appwrite-server";
 import {database} from "@/app/utils/appwrite";
@@ -11,7 +9,6 @@ import {redirect} from "next/navigation";
 import {RoomMain} from "@/app/components/Room/RoomMain";
 import {Query} from "node-appwrite";
 import Message from "@/app/utils/interfaces/MessageInterface";
-import LoadingRoom from "@/app/[roomCode]/loading";
 import {RoomActionButtons} from "@/app/components/Room/RoomActionButtons";
 import getAvatar from "@/app/utils/getAvatar";
 import {InvitePeople} from "@/app/components/Room/InvitePeople";
