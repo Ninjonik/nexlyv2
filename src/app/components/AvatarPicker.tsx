@@ -9,9 +9,10 @@ interface AvatarPickerProps {
     setForm: React.Dispatch<React.SetStateAction<any>>
     inputName: string
     avatarText?: string
+    color?: "primary" | "secondary"
 }
 
-export const AvatarPicker = ({ form, setForm, inputName, avatarText = "Select your avatar" } : AvatarPickerProps) => {
+export const AvatarPicker = ({ form, setForm, inputName, avatarText = "Select your avatar", color = "primary" } : AvatarPickerProps) => {
 
     const [image, setImage] = useState<string>(process.env.NEXT_PUBLIC_HOSTNAME + "/img/defaultAvatar.jpg");
 
@@ -32,17 +33,19 @@ export const AvatarPicker = ({ form, setForm, inputName, avatarText = "Select yo
         };
     }, [image]);
 
+    const classes = ["text-primary", "text-secondary"]
+
     return (
         <label htmlFor={inputName} className={"group w-1/2 h-20"}>
             <div className={"relative"}>
                 <div className={"avatar flex justify-center items-center gap-4 opacity-100 group-hover:opacity-0 transition-all ease-in-out absolute"}>
-                    <span className={"text-primary"}>{avatarText}</span>
+                    <span className={`text-${color}`}>{avatarText}</span>
                     <div className="w-20 mask mask-squircle group-hover:opacity-50 transition-all ease-in">
                         <img src={image} />
                     </div>
                 </div>
                 <div className="avatar placeholder flex justify-center items-center gap-4 opacity-0 group-hover:opacity-100 transition-all ease-in-out absolute">
-                    <span className={"text-primary"}>{avatarText}</span>
+                    <span className={`text-${color}`}>{avatarText}</span>
                     <div className="bg-neutral text-neutral-content mask mask-squircle w-20">
                         <span className="text-3xl"><AiOutlineCloudUpload /></span>
                     </div>

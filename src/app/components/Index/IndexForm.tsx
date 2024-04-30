@@ -218,19 +218,19 @@ export const IndexForm = () => {
                     {joinLoading ? (
                         <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Joining the room"}/>
                     ) : (
-                        <Button color={"primary"} type={"submit"} name={"joinRoom"} text={"Join the room"}/>
+                        <Button color={"primary"} type={"submit"} name={"joinRoom"} text={"Join a room"}/>
                     )}
                 </div>
                 <div className={"divider"}/>
                 <div className={"flex flex-col gap-4"}>
-                    <Input name={"roomName"} label={"Room name"} form={form?.roomName} setForm={setForm}/>
-                    <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription} setForm={setForm}/>
-                    <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"}
+                    <Input name={"roomName"} label={"Room name"} form={form?.roomName} setForm={setForm} color={"secondary"} />
+                    <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription} setForm={setForm} color={"secondary"} />
+                    <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"} color={"secondary"}
                                   avatarText={"Select group avatar"}/>
                     {loading ? (
-                        <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Creating a room"}/>
+                        <Button disabled={true} loading={true} color={"secondary"} type={"button"} name={""} text={"Creating a room"}/>
                     ) : (
-                        <Button color={"primary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
+                        <Button color={"secondary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
                     )}
                 </div>
             </form>
