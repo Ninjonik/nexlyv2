@@ -6,6 +6,7 @@ import {Loading} from "@/app/components/Loading";
 import {Query} from "appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {client, database, databases} from "@/app/utils/appwrite";
+import {PhotoProvider} from "react-photo-view";
 
 interface MessageSectionProps {
     messages: MessageInterface[],
@@ -87,6 +88,7 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
             scrollableTarget="scrollableDiv"
             inverse={true}
         >
+            <PhotoProvider>
             { temporaryMessage && (
                 <Message message={temporaryMessage} temporary={true} />
             )}
@@ -95,6 +97,7 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
                     <Message key={key} message={message} />
                 ))
             }
+            </PhotoProvider>
         </InfiniteScroll>
     );
 };

@@ -22,7 +22,6 @@ export default function RootLayout({
                     {children}
                 </ClientWrapper>
             </UserContextProvider>
-
         </body>
     </html>
   );

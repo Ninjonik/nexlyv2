@@ -1,9 +1,5 @@
 import React, {
-    ChangeEvent,
-    Dispatch,
-    SetStateAction,
     useCallback,
-    useContext,
     useEffect,
     useRef,
     useState
@@ -12,16 +8,16 @@ import { FaPlus } from 'react-icons/fa';
 import {AiOutlineDelete, AiOutlineFileGif, AiOutlineSmile} from "react-icons/ai";
 import {Anchor} from "@/app/components/Anchor";
 import TextareaAutosize from 'react-textarea-autosize';
-import {account, database, databases} from "@/app/utils/appwrite";
-import {ID, Permission, Role} from "appwrite";
+import {account, database} from "@/app/utils/appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {useUserContext} from "@/app/utils/UserContext";
-import User from "@/app/utils/interfaces/UserInterface";
 import Message from "@/app/utils/interfaces/MessageInterface";
 import MessageInterface from "@/app/utils/interfaces/MessageInterface";
 import {DefaultExtensionType, defaultStyles, FileIcon} from "react-file-icon";
 import Image from "next/image";
 import uploadMultipleFiles from "@/app/utils/uploadMultipleFiles";
+import GifPicker from "gif-picker-react";
+import Tippy from "@tippyjs/react";
 
 
 interface TextareaProps {
@@ -224,8 +220,23 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                     />
                 </div>
                 <div className={"flex justify-center items-center"}>
-                    <Anchor icon={<AiOutlineFileGif/>} title={"Add attachment"} hideTitle={true} size={"2xl"}
-                            className={"p-2"}/>
+                    <Tippy
+                        content={
+                            <GifPicker
+                                tenorApiKey={process.env.NEXT_PUBLIC_TENOR_KEY || "no_tenor_api_key"} onGifClick={(e: { url: string }) => handleSubmit(e.url)}
+                            />
+                        }
+                        trigger={"click"}
+                        interactive={true}
+                        appendTo={document.body}
+                    >
+                        <a
+                            title={"Open GIF picker"}
+                            className={`flex justify-center items-center text-center text-2xl text-primary hover:text-secondary ease-in transition-all hover:cursor-pointer p-2`}
+                        >
+                            <AiOutlineFileGif/>
+                        </a>
+                    </Tippy>
                     <Anchor icon={<AiOutlineSmile/>} title={"Add attachment"} hideTitle={true} size={"2xl"}
                             className={"p-2"}/>
                 </div>
