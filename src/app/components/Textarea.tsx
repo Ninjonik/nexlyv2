@@ -1,10 +1,5 @@
-import React, {
-    useCallback,
-    useEffect,
-    useRef,
-    useState
-} from "react";
-import { FaPlus } from 'react-icons/fa';
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {FaPlus} from 'react-icons/fa';
 import {AiOutlineDelete, AiOutlineFileGif, AiOutlineSmile} from "react-icons/ai";
 import {Anchor} from "@/app/components/Anchor";
 import TextareaAutosize from 'react-textarea-autosize';
@@ -18,6 +13,8 @@ import Image from "next/image";
 import uploadMultipleFiles from "@/app/utils/uploadMultipleFiles";
 import GifPicker from "gif-picker-react";
 import Tippy from "@tippyjs/react";
+import EmojiPicker, {EmojiClickData, EmojiStyle} from "emoji-picker-react";
+import {Loading} from "@/app/components/Loading";
 
 
 interface TextareaProps {
@@ -220,6 +217,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                     />
                 </div>
                 <div className={"flex justify-center items-center"}>
+                    <React.Suspense fallback={<Loading />}>
                     <Tippy
                         content={
                             <GifPicker
@@ -237,8 +235,22 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                             <AiOutlineFileGif/>
                         </a>
                     </Tippy>
-                    <Anchor icon={<AiOutlineSmile/>} title={"Add attachment"} hideTitle={true} size={"2xl"}
-                            className={"p-2"}/>
+                    <Tippy
+                        content={
+                            <EmojiPicker emojiStyle={EmojiStyle.TWITTER} onEmojiClick={(emoji: EmojiClickData) => setText((prevText) => prevText + " " + emoji.emoji)} />
+                        }
+                        trigger={"click"}
+                        interactive={true}
+                        appendTo={document.body}
+                    >
+                        <a
+                            title={"Open Emoji picker"}
+                            className={`flex justify-center items-center text-center text-2xl text-primary hover:text-secondary ease-in transition-all hover:cursor-pointer p-2`}
+                        >
+                            <AiOutlineSmile/>
+                        </a>
+                    </Tippy>
+                    </React.Suspense>
                 </div>
                 <input type={"submit"} hidden/>
             </form>

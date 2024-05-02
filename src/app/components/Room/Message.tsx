@@ -18,6 +18,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {isValidImageUrl} from "@/app/utils/isValidImageUrl";
 import rehypeHighlight from "rehype-highlight";
+import Twemoji from 'react-twemoji';
 
 interface MessageProps {
     message: MessageInterface;
@@ -82,8 +83,8 @@ export const Message = ({ message, temporary } : MessageProps) => {
                         </div>
                     ) : (
                         <div
-                            className={`${own ? "rounded-l-lg bg-primary text-base-100" : "rounded-r-lg bg-base-300"} rounded-b-lg w-full p-1 whitespace-pre-line`}>
-                            <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>{message.message}</Markdown>
+                            className={`${own ? "rounded-l-lg bg-primary text-base-100 text-right" : "rounded-r-lg bg-base-300 text-left"} rounded-b-lg w-full p-1 whitespace-pre-line`}>
+                            <Twemoji options={{ className: 'twemoji' }}><Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>{message.message}</Markdown></Twemoji>
                         </div>
                 ))}
                 {attachmentsData.length > 0 && (

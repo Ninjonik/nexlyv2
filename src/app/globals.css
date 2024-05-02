@@ -44,3 +44,9 @@ body {
 a:hover {
   text-decoration: underline;
 }
+
+.twemoji {
+  display: inline;
+  padding-right: 1%;
+  height: 1.5rem;
+}
