@@ -3,16 +3,18 @@
 import {Anchor} from "@/app/components/Anchor";
 import {FaArrowRight, FaPhone, FaUsers} from "react-icons/fa";
 import {ThemeSelector} from "@/app/components/ThemeSelector";
-import React, {useCallback} from "react";
+import React, {SetStateAction, useCallback} from "react";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {useUserContext} from "@/app/utils/UserContext";
 import {account} from "@/app/utils/appwrite";
 
 interface RoomActionButtonsProps {
-    room: Room
+    room: Room,
+    inCall: boolean,
+    setInCall: React.Dispatch<SetStateAction<boolean>>,
 }
 
-export const RoomActionButtons = ({ room } : RoomActionButtonsProps) => {
+export const RoomActionButtons = ({ room, inCall, setInCall } : RoomActionButtonsProps) => {
 
     const { user } = useUserContext();
 
@@ -52,6 +54,7 @@ export const RoomActionButtons = ({ room } : RoomActionButtonsProps) => {
         <aside
             className={"col-span-2 row-span-1 bg-base-100 flex justify-end py-2 pr-8"}>
             <div className={"flex flex-row justify-end gap-4"}>
+                {/*TODO: IMPLEMENT CHANGING ICONS BASED OFF WHETHER IN CALL OR NO*/}
                 <Anchor title={"Call"} hideTitle={true} icon={<FaPhone/>} action={startACall}/>
                 <Anchor title={"Hide sidebar"} hideTitle={true} icon={<FaUsers/>}/>
                 <Anchor title={"Leave the room"} hideTitle={true} icon={<FaArrowRight/>}/>

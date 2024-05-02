@@ -49,8 +49,6 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
                 </div>
             </header>
 
-            <RoomActionButtons room={room} />
-
             <RoomMain room={room} messagesProps={messages} />
 
             <aside className={"row-span-11 col-span-2 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8"}>
