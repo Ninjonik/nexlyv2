@@ -12,7 +12,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "target": "ES6",
+    "target": "ES5",
     "plugins": [
       {
         "name": "next"

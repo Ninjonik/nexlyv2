@@ -207,7 +207,7 @@ export const IndexForm = () => {
             {error && (
                 <div className={"text-red-500"}>{error}</div>
             )}
-            <form className={"flex flex-row justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
+            <form className={"flex flex-col sm:flex-row justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
                 <div className={"flex flex-col gap-4"}>
                     <Input name={"name"} label={"Nickname"} form={form?.name}
                            setForm={setForm}/>

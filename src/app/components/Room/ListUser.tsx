@@ -1,10 +1,12 @@
+"use client"
+
 import {Avatar} from "@/app/components/Avatar";
 import React from "react";
 import User from "@/app/utils/interfaces/UserInterface";
 import {storage} from "@/app/utils/appwrite";
 import getAvatar from "@/app/utils/getAvatar";
 
-export const ListUser = async ({ user }: {user: User}) => {
+export const ListUser = ({ user }: {user: User}) => {
 
     const avatar = getAvatar(user.avatar);
     if(!avatar) return "";

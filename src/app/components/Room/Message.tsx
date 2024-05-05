@@ -33,13 +33,17 @@ export const Message = ({ message, temporary } : MessageProps) => {
 
     useEffect(() => {
         if(user) {
-            if(message.author.$id == user.$id) setOwn(true);
+            if(message.author.$id === user.$id){
+                setOwn(true);
+            } else {
+                setOwn(false);
+            }
         }
-    }, [user, message.author.$id]);
+    }, [user, message]);
 
     useEffect(() => {
         setAvatar(getAvatar(message.author.avatar));
-    }, [message.author.avatar]);
+    }, [message]);
 
     useEffect(() => {
         const fetchAttachmentsData = async () => {
@@ -59,7 +63,6 @@ export const Message = ({ message, temporary } : MessageProps) => {
 
     let validImageUrl = false;
     if(message?.message) validImageUrl = isValidImageUrl(message.message);
-
 
     return (
         <div className={`flex flex-row max-w-[50%] overflow-y-hidden gap-4 ${own ? "place-self-end" : "place-self-start"} ${temporary && "opacity-25"}`}>

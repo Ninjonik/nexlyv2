@@ -51,28 +51,6 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
 
             <RoomMain room={room} messagesProps={messages} />
 
-            <aside className={"row-span-11 col-span-2 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8"}>
-                <div className={"flex flex-col gap-2"}>
-                    <h2 className={"font-bold text-3xl"}>{room.name}</h2>
-                    <h3 className={"font-bold text-xl"}>{room.description}</h3>
-                </div>
-
-                <div className={"flex flex-col gap-4"}>
-                    <div className={"flex flex-row justify-between items-center"}>
-                        <h2 className={"font-bold text-2xl flex flex-row justify-center items-center text-center gap-2"}>{
-                            <FaUser/>} Members ({room.users.length})</h2>
-                        <InvitePeople roomId={room.$id} />
-                    </div>
-
-                    <div className={"flex flex-col gap-3 max-h-96 overflow-y-scroll no-scrollbar"}>
-                        {room.users.map((user, index) => (
-                            <ListUser key={index} user={user}/>
-                        ))}
-                    </div>
-                </div>
-
-            </aside>
-
         </main>
     );
 }

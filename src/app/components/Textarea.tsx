@@ -217,7 +217,6 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                     />
                 </div>
                 <div className={"flex justify-center items-center"}>
-                    <React.Suspense fallback={<Loading />}>
                     <Tippy
                         content={
                             <GifPicker
@@ -250,7 +249,6 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                             <AiOutlineSmile/>
                         </a>
                     </Tippy>
-                    </React.Suspense>
                 </div>
                 <input type={"submit"} hidden/>
             </form>

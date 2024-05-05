@@ -5,8 +5,9 @@ import {UserContextProvider} from "@/app/utils/UserContext";
 import 'react-photo-view/dist/react-photo-view.css';
 
 export const metadata: Metadata = {
-  title: "Nexly",
-  description: "The ultimate safe & fast communications platform",
+    title: "Nexly",
+    description: "The ultimate safe & fast communications platform",
+    manifest : "/manifest.json",
 };
 
 export default function RootLayout({
