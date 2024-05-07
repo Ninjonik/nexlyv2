@@ -65,7 +65,7 @@ export const Message = ({ message, temporary } : MessageProps) => {
     if(message?.message) validImageUrl = isValidImageUrl(message.message);
 
     return (
-        <div className={`flex flex-row max-w-[80%] lg:max-w-[50%] overflow-y-hidden gap-4 ${own ? "place-self-end" : "place-self-start"} ${temporary && "opacity-25"}`}>
+        <div className={`flex flex-row overflow-hidden max-w-full lg:max-w-[50%] overflow-y-hidden gap-4 ${own ? "place-self-end" : "place-self-start"} ${temporary && "opacity-25"}`}>
             <Avatar className={own ? "order-2" : ""} avatar={avatar} />
             <div className={`flex flex-col w-full gap-1`}>
                 <div className={"flex flex-row items-baseline text-center gap-2"}>
@@ -78,7 +78,7 @@ export const Message = ({ message, temporary } : MessageProps) => {
                         <div>
                                 <PhotoView src={message.message}>
                                     <img
-                                        className="rounded-md ease-in object-fit"
+                                        className={`rounded-b-lg ease-in object-fit ${own ? "rounded-l-md bg-primary text-base-100" : "rounded-r-md bg-base-300 text-left"}`}
                                         alt={"Imported message image"}
                                         src={message.message}
                                     />
@@ -93,13 +93,13 @@ export const Message = ({ message, temporary } : MessageProps) => {
                 {attachmentsData.length > 0 && (
                     <div className={"flex flex-col gap-2"}>
                         {attachmentsData.map(({ preview, file, extension }, index) => (
-                            <div key={index} className={"max-h-96 max-w-96 relative pr-16"}>
+                            <div key={index} className={"max-h-96 max-w-96 relative lg:pr-16"}>
                                 {preview && file && extension && (
                                     <>
                                         {["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"].includes(file.mimeType) ? (
                                                 <PhotoView key={index} src={preview}>
                                                     <img
-                                                        className="rounded-md ease-in object-fit"
+                                                        className={`rounded-b-lg ease-in object-fit ${own ? "rounded-l-md bg-primary text-base-100" : "rounded-r-md bg-base-300 text-left"}`}
                                                         alt={file.name}
                                                         src={preview}
                                                     />

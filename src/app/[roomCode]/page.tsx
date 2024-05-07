@@ -36,7 +36,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
 
     return (
         <main className={"h-full w-full grid grid-cols-9 grid-rows-12 text-base-content"}>
-            <header className={"col-span-7 bg-base-100 row-span-1 flex justify-between py-2 px-8"}>
+            <header className={"col-span-7 bg-base-100 row-span-1 flex lg:justify-between py-2 px-8"}>
                 <div className={"flex flex-row justify-center items-center gap-4"}>
                     <Avatar avatar={getAvatar(room.avatar)} />
                     <div className={"flex flex-col justify-start gap-2"}>
