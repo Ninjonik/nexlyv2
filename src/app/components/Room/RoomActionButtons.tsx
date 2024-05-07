@@ -15,15 +15,20 @@ interface RoomActionButtonsProps {
     setUsersHidden: React.Dispatch<SetStateAction<boolean>>,
     showDropdown: boolean,
     setShowDropdown: React.Dispatch<SetStateAction<boolean>>,
+    hideCall: boolean,
+    setHideCall: React.Dispatch<SetStateAction<boolean>>,
+    handleOnDisconnectedFn: () => void,
 }
 
-export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUsersHidden, showDropdown, setShowDropdown } : RoomActionButtonsProps) => {
+export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUsersHidden, showDropdown, setShowDropdown, handleOnDisconnectedFn, hideCall, setHideCall } : RoomActionButtonsProps) => {
 
     const { user } = useUserContext();
 
     const handleCallButton = useCallback(async () => {
 
-        if(inCall) return setInCall(false);
+        if(inCall){
+            return handleOnDisconnectedFn();
+        }
 
         try {
             await account.get();
@@ -42,6 +47,8 @@ export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUse
                     }),
                 }
             )
+
+            setHideCall(false);
 
             const joinResJson = await callRes.json();
             if(joinResJson?.error){
@@ -72,10 +79,10 @@ export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUse
                 </button>
 
                 <div className={`${showDropdown ? "" : "hidden"} -z-25 flex flex-col p-2 lg:p-0 mr-16 absolute bg-base-300 rounded-xl lg:rounded-none lg:bg-transparent lg:static lg:flex-row justify-end gap-4`}>
-                    <Anchor title={"Call"} hideTitle={true} icon={inCall ? <ImPhoneHangUp /> : <FaPhone/>} action={handleCallButton}/>
-                    <Anchor title={"Hide sidebar"} hideTitle={true} icon={<FaUsers/>}
+                    <Anchor title={inCall ? "Hang" : "Call"} hideTitle={true} icon={inCall ? <ImPhoneHangUp /> : <FaPhone/>} action={handleCallButton}/>
+                    <Anchor title={usersHidden ? "Show sidebar" : "Hide sidebar"} hideTitle={true} icon={<FaUsers/>}
                             action={() => setUsersHidden(!usersHidden)}/>
-                    <Anchor title={"Leave the room"} hideTitle={true} icon={<FaArrowRight/>}/>
+                    <Anchor title={"Leaves the room"} hideTitle={true} icon={<FaArrowRight/>}/>
                     <ThemeSelector/>
                 </div>
             </div>

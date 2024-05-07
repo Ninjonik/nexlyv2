@@ -16,9 +16,10 @@ import {RoomEvent, Track} from "livekit-client";
 import {isEqualTrackRef, isWeb} from "@livekit/components-core";
 
 import Source = Track.Source;
+import {ImPhoneHangUp} from "react-icons/im";
 
-interface ConferenceProps extends VideoConferenceProps {
-    onDisconnectedFn: () => void
+interface ExtendedVideoConferenceProps extends VideoConferenceProps {
+    handleOnDisconnectedFn: () => void,
 }
 
 export default function VideoConference({
@@ -26,9 +27,9 @@ export default function VideoConference({
                                     chatMessageDecoder,
                                     chatMessageEncoder,
                                     SettingsComponent,
-                                    onDisconnectedFn,
+                                    handleOnDisconnectedFn,
                                     ...props
-                                }: ConferenceProps) {
+                                }: ExtendedVideoConferenceProps) {
     const [widgetState, setWidgetState] = React.useState<WidgetState>({
         showChat: false,
         unreadMessages: 0,
@@ -112,7 +113,7 @@ export default function VideoConference({
                             <TrackToggle source={Source.Camera}/>
                             <TrackToggle source={Source.Microphone}/>
                             <TrackToggle source={Source.ScreenShare}/>
-                            <DisconnectButton onClick={onDisconnectedFn}>Leave Room</DisconnectButton>
+                            <DisconnectButton onClick={(handleOnDisconnectedFn)}><ImPhoneHangUp /></DisconnectButton>
                             <StartAudio label={"Audio"}/>
                         </div>
                     </div>

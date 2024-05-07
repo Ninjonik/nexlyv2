@@ -13,6 +13,7 @@ import {RoomActionButtons} from "@/app/components/Room/RoomActionButtons";
 import {FaUser} from "react-icons/fa";
 import {InvitePeople} from "@/app/components/Room/InvitePeople";
 import {ListUser} from "@/app/components/Room/ListUser";
+import {onDisconnectedFn} from "@/app/utils/onDisconnectedFn";
 
 interface RoomMainProps {
     room: Room;
@@ -27,6 +28,7 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
     const [inCall, setInCall] = useState<boolean>(false);
     const [usersHidden, setUsersHidden] = useState<boolean>(false);
     const [showDropdown, setShowDropdown] = useState<boolean>(true);
+    const [hideCall, setHideCall] = useState<boolean>(false);
 
     function handleWindowSizeChange() {
         const width = window.innerWidth;
@@ -58,13 +60,20 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
 
     }, []);
 
+
+    const handleOnDisconnectedFn = async (roomId: string) => {
+        setHideCall(true);
+        setInCall(false);
+        return await onDisconnectedFn(roomId);
+    }
+
     return (
         <>
-            <RoomActionButtons room={room} inCall={inCall} setInCall={setInCall} usersHidden={usersHidden} setUsersHidden={setUsersHidden} setShowDropdown={setShowDropdown} showDropdown={showDropdown} />
+            <RoomActionButtons handleOnDisconnectedFn={() => handleOnDisconnectedFn(room.$id)} hideCall={hideCall} setHideCall={setHideCall} room={room} inCall={inCall} setInCall={setInCall} usersHidden={usersHidden} setUsersHidden={setUsersHidden} setShowDropdown={setShowDropdown} showDropdown={showDropdown} />
 
             <main className={`flex flex-col row-span-12 justify-between bg-base-200 h-full ${usersHidden ? "col-span-9" : "col-span-7"}`}>
 
-                <RoomCall inCall={inCall} setInCall={setInCall} room={room}/>
+                <RoomCall handleOnDisconnectedFn={() => handleOnDisconnectedFn(room.$id)} inCall={inCall} setInCall={setInCall} hideCall={hideCall} setHideCall={setHideCall} room={room}/>
 
                 <section
                     className={"bg-base-200 border-y-2 border-r-2 border-primary flex flex-col-reverse gap-6 p-4 overflow-y-scroll no-scrollbar h-full"}
@@ -76,7 +85,7 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
                 <RoomFooter room={room} setTemporaryMessage={setTemporaryMessage}/>
             </main>
 
-            <aside className={`row-span-11 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8 transition-all ${usersHidden ? "col-span-0 row-span-0 hidden" : "col-span-2"}`}>
+            <aside className={`row-span-11 bg-base-100 border-t-2 border-primary flex flex-col gap-8 p-8 ${usersHidden ? "col-span-0 row-span-0 hidden" : "col-span-2"}`}>
                 <div className={"flex flex-col gap-2"}>
                     <h2 className={"font-bold text-3xl"}>{room.name}</h2>
                     <h3 className={"font-bold text-xl"}>{room.description}</h3>
