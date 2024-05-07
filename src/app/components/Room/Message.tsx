@@ -104,8 +104,6 @@ export const Message = ({ message, temporary } : MessageProps) => {
                                                         src={preview}
                                                     />
                                                     </PhotoView>
-                                            /* TODO: Make it so the photoview arrows will actually work */
-                                            /* TODO: Fix it so the FileIcon doesnt get stuck inside of a tall image above */
                                         ) : (
                                             <FileIcon extension={extension} {...(defaultStyles[extension as DefaultExtensionType] || defaultStyles.png)} />
                                         )}

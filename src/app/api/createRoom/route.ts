@@ -37,37 +37,45 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomNa
         return generatedCode;
     };
 
-    const generatedCode = await generateUniqueRoomCode();
+    try {
+        const generatedCode = await generateUniqueRoomCode();
 
-    const newUser: any = await databases.createDocument(
-        database,
-        "users",
-        id,
-        {
-            name: name,
-            avatar: avatar,
-            room: {
-                "$id": generatedCode,
-                name: roomName,
-                closed: false,
-                avatar: roomAvatar,
-                description: roomDescription,
-                "$permissions": [
-                    Permission.read(Role.user(id)),
-                    Permission.create(Role.user(id)),
-                    Permission.update(Role.user(id)),
-                    Permission.delete(Role.user(id)),
-                    Permission.read(Role.any()),
-                ]
-            }
-        },
-        [
-            Permission.read(Role.any())
-        ]
-    );
+        const newUser: any = await databases.createDocument(
+            database,
+            "users",
+            id,
+            {
+                name: name,
+                avatar: avatar,
+                room: {
+                    "$id": generatedCode,
+                    name: roomName,
+                    closed: false,
+                    avatar: roomAvatar,
+                    description: roomDescription,
+                    "$permissions": [
+                        Permission.read(Role.user(id)),
+                        Permission.create(Role.user(id)),
+                        Permission.update(Role.user(id)),
+                        Permission.delete(Role.user(id)),
+                        Permission.read(Role.any()),
+                    ]
+                }
+            },
+            [
+                Permission.read(Role.any())
+            ]
+        );
 
-    if(newUser && newUser.room && newUser.room.$id) return Response.json({ roomCode: generatedCode, newUser: newUser });
-    return Response.json({ error: "Unknown error." }, { status: 500 })
+        if(newUser && newUser.room && newUser.room.$id) return Response.json({ roomCode: generatedCode, newUser: newUser });
+        return Response.json({ error: "Unknown error." }, { status: 500 })
+    } catch(e: any) {
+        console.error(e);
+        console.info(e.message);
+        return Response.json({ error: e.message }, { status: 400 })
+    }
+
+
 
 }
 

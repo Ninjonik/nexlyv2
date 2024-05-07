@@ -68,7 +68,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             if(user){
                 localStorage.removeItem("user")
                 console.warn("DELETING SESSIONS ON EXIT")
-                account.deleteSessions()
+                await account.deleteSessions()
                 // navigator.sendBeacon(`/api/deleteUser`,
                 //     JSON.stringify({
                 //         token: user.token
