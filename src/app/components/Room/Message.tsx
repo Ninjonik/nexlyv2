@@ -65,7 +65,7 @@ export const Message = ({ message, temporary } : MessageProps) => {
     if(message?.message) validImageUrl = isValidImageUrl(message.message);
 
     return (
-        <div className={`flex flex-row max-w-[50%] overflow-y-hidden gap-4 ${own ? "place-self-end" : "place-self-start"} ${temporary && "opacity-25"}`}>
+        <div className={`flex flex-row max-w-[80%] lg:max-w-[50%] overflow-y-hidden gap-4 ${own ? "place-self-end" : "place-self-start"} ${temporary && "opacity-25"}`}>
             <Avatar className={own ? "order-2" : ""} avatar={avatar} />
             <div className={`flex flex-col w-full gap-1`}>
                 <div className={"flex flex-row items-baseline text-center gap-2"}>
@@ -86,7 +86,7 @@ export const Message = ({ message, temporary } : MessageProps) => {
                         </div>
                     ) : (
                         <div
-                            className={`${own ? "rounded-l-lg bg-primary text-base-100 text-right" : "rounded-r-lg bg-base-300 text-left"} rounded-b-lg w-full p-1 whitespace-pre-line`}>
+                            className={`${own ? "rounded-l-lg bg-primary text-base-100" : "rounded-r-lg bg-base-300 text-left"} rounded-b-lg w-full p-1 whitespace-pre-line`}>
                             <Twemoji options={{ className: 'twemoji' }}><Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>{message.message}</Markdown></Twemoji>
                         </div>
                 ))}

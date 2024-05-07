@@ -82,7 +82,7 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
             dataLength={messages.length}
             next={fetchData}
             hasMore={hasMore}
-            loader={<p className="text-center m-5">⏳&nbsp;Loading <Loading /></p>}
+            loader={<p className="text-center m-5"><Loading /></p>}
             endMessage={<p className="text-center m-5">-- END OF CONVERSATION --</p>}
             className={"flex flex-col-reverse gap-6 p-4"}
             scrollableTarget="scrollableDiv"

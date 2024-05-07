@@ -26,11 +26,17 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
     const [temporaryMessage, setTemporaryMessage] = useState<MessageInterface | null>(null);
     const [inCall, setInCall] = useState<boolean>(false);
     const [usersHidden, setUsersHidden] = useState<boolean>(false);
+    const [showDropdown, setShowDropdown] = useState<boolean>(true);
 
     function handleWindowSizeChange() {
         const width = window.innerWidth;
         const isMobile = width <= 768;
-        if(isMobile) setUsersHidden(true);
+        if(isMobile){
+            setUsersHidden(true);
+            setShowDropdown(false);
+        } else {
+            setShowDropdown(true);
+        }
     }
 
     useEffect(() => {
@@ -54,7 +60,7 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
 
     return (
         <>
-            <RoomActionButtons room={room} inCall={inCall} setInCall={setInCall} usersHidden={usersHidden} setUsersHidden={setUsersHidden} />
+            <RoomActionButtons room={room} inCall={inCall} setInCall={setInCall} usersHidden={usersHidden} setUsersHidden={setUsersHidden} setShowDropdown={setShowDropdown} showDropdown={showDropdown} />
 
             <main className={`flex flex-col row-span-12 justify-between bg-base-200 h-full ${usersHidden ? "col-span-9" : "col-span-7"}`}>
 

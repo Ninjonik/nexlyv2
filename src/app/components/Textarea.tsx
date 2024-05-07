@@ -67,11 +67,6 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
         if(submitting) return;
 
         const jwt = await account.createJWT();
-        const acc = await account.get();
-        console.info("USER ID: ", user?.$id);
-        console.info("ACCOUNT ID: ", acc.$id);
-        console.info("MESSAGE: ", message);
-        console.info("ATTACHMENTS: ", attachmentsToSend);
 
         if(!user) return null;
         if(!message && attachmentsToSend.length < 1) return null;
@@ -166,7 +161,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
 
     return (
         <div className={"w-full flex flex-col bg-base-300 rounded-lg px-2 py-1"}>
-            <ul className={"flex flex-row gap-4"}>
+            <ul className={"flex flex-row gap-4 overflow-x-scroll max-w-screen no-scrollbar"}>
                 {attachments?.map((attachment: File, index) => {
                     const fileExtension = attachment.name.split('.').pop()?.toLowerCase() || 'png';
                     const fileIconStyles = defaultStyles[fileExtension as DefaultExtensionType] || defaultStyles.png;

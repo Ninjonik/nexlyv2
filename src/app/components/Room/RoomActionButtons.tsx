@@ -1,5 +1,3 @@
-"use client"
-
 import {Anchor} from "@/app/components/Anchor";
 import {FaArrowRight, FaPhone, FaUsers} from "react-icons/fa";
 import {ThemeSelector} from "@/app/components/ThemeSelector";
@@ -15,12 +13,13 @@ interface RoomActionButtonsProps {
     setInCall: React.Dispatch<SetStateAction<boolean>>,
     usersHidden: boolean,
     setUsersHidden: React.Dispatch<SetStateAction<boolean>>,
+    showDropdown: boolean,
+    setShowDropdown: React.Dispatch<SetStateAction<boolean>>,
 }
 
-export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUsersHidden } : RoomActionButtonsProps) => {
+export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUsersHidden, showDropdown, setShowDropdown } : RoomActionButtonsProps) => {
 
     const { user } = useUserContext();
-    const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
     const handleCallButton = useCallback(async () => {
 
@@ -72,7 +71,6 @@ export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUse
                     </svg>
                 </button>
 
-                {/*TODO: IMPLEMENT CHANGING ICONS BASED OFF WHETHER IN CALL OR NO*/}
                 <div className={`${showDropdown ? "" : "hidden"} -z-25 flex flex-col p-2 lg:p-0 mr-16 absolute bg-base-300 rounded-xl lg:rounded-none lg:bg-transparent lg:static lg:flex-row justify-end gap-4`}>
                     <Anchor title={"Call"} hideTitle={true} icon={inCall ? <ImPhoneHangUp /> : <FaPhone/>} action={handleCallButton}/>
                     <Anchor title={"Hide sidebar"} hideTitle={true} icon={<FaUsers/>}

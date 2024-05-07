@@ -45,7 +45,7 @@ const Room = async ({ params } : { params: {roomCode: string} }) => {
                     </div>
                 </div>
                 <div className={"flex justify-center items-center"}>
-                    <h2 className={"text-4xl font-bold italic"}>#{room.$id}</h2>
+                    <h2 className={"text-4xl font-bold italic hidden lg:block"}>#{room.$id}</h2>
                 </div>
             </header>
 
