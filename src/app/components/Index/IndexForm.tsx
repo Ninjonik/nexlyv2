@@ -9,6 +9,7 @@ import {useRouter} from "next/navigation";
 import generateRandomString from "@/app/utils/generateRandomString";
 import {useUserContext} from "@/app/utils/UserContext";
 import {ID} from "appwrite";
+import {bool} from "prop-types";
 
 export interface IndexFormInterface {
     name: string,
@@ -25,6 +26,7 @@ export const IndexForm = () => {
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [joinLoading, setJoinLoading] = useState<boolean>(false);
+    const [tab, setTab] = useState<boolean>(true);
     const router = useRouter();
     const { getUserData } = useUserContext();
 
@@ -207,32 +209,56 @@ export const IndexForm = () => {
             {error && (
                 <div className={"text-red-500"}>{error}</div>
             )}
-            <form className={"flex flex-col sm:flex-row justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
+            <form className={"flex flex-col justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
+
+                <div role="tablist" className="tabs tabs-boxed">
+                    <a role="tab" className={`tab text-primary ${tab && "tab-active"}`} onClick={() => setTab(true)}>Join a room</a>
+                    <a role="tab" className={`tab text-secondary ${!tab && "tab-active"}`} onClick={() => setTab(false)}>Create a room</a>
+                </div>
+
                 <div className={"flex flex-col gap-4"}>
                     <Input name={"name"} label={"Nickname"} form={form?.name}
-                           setForm={setForm}/>
-                    <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
-                           setForm={setForm}/>
-                    <AvatarPicker form={form} setForm={setForm} inputName={"avatar"}/>
+                           setForm={setForm} color={tab ? "primary" : "secondary"} />
 
-                    {joinLoading ? (
-                        <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Joining the room"}/>
+                    {tab ? (
+                        <>
+
+                            <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
+                                   setForm={setForm}/>
+                            <Input name={"roomDescription"} label={"‎"} form={form?.roomDescription}
+                                   setForm={setForm} color={"secondary"} className={"invisible"}/>
+                            <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
+
+                            {joinLoading ? (
+                                <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""}
+                                        text={"Joining the room"}/>
+                            ) : (
+                                <Button color={"primary"} type={"submit"} name={"joinRoom"} text={"Join a room"}/>
+                            )}
+                        </>
                     ) : (
-                        <Button color={"primary"} type={"submit"} name={"joinRoom"} text={"Join a room"}/>
+                        <>
+                            <Input name={"roomName"} label={"Room name"} form={form?.roomName} setForm={setForm}
+                                   color={"secondary"}/>
+                            <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription}
+                                   setForm={setForm} color={"secondary"}/>
+                            <div className={"flex flex-row justify-evenly"}>
+                                <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} color={"secondary"} />
+                                <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"} color={"secondary"}
+                                              avatarText={"Select group's avatar"}/>
+                            </div>
+
+                            {loading ? (
+                                <Button disabled={true} loading={true} color={"secondary"} type={"button"} name={""}
+                                        text={"Creating a room"}/>
+                            ) : (
+                                <Button color={"secondary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
+                            )}
+                        </>
                     )}
+
                 </div>
-                <div className={"divider"}/>
-                <div className={"flex flex-col gap-4"}>
-                    <Input name={"roomName"} label={"Room name"} form={form?.roomName} setForm={setForm} color={"secondary"} />
-                    <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription} setForm={setForm} color={"secondary"} />
-                    <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"} color={"secondary"}
-                                  avatarText={"Select group avatar"}/>
-                    {loading ? (
-                        <Button disabled={true} loading={true} color={"secondary"} type={"button"} name={""} text={"Creating a room"}/>
-                    ) : (
-                        <Button color={"secondary"} type={"submit"} name={"createRoom"} text={"Create a new room"}/>
-                    )}
-                </div>
+
             </form>
         </div>
 
