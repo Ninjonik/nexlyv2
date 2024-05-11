@@ -9,6 +9,8 @@ import generateRandomString from "@/app/utils/generateRandomString";
 import {account, storage} from "@/app/utils/appwrite";
 import {useUserContext} from "@/app/utils/UserContext";
 import {ID} from "appwrite";
+import fireToast from "@/app/utils/fireToast";
+import {toast} from "react-toastify";
 
 export interface JoinRoomFormInterface {
     avatar: File,
@@ -27,10 +29,24 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
     const router = useRouter();
     const { getUserData } = useUserContext();
 
+    const submitForm = (e: SyntheticEvent) => {
+        toast.promise(
+            handleFormSubmit(e),
+            {
+                pending: 'Joining room...',
+                success: 'Room joined!',
+                error: 'There was an error while joining the room...'
+            },
+            {
+                autoClose: 2000,
+            }
+        )
+    }
+
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
 
-        setLoading(true)
+        setLoading(true);
 
         /* Check if the desired room exists and is open for new users */
         const res = await fetch(
@@ -119,7 +135,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
             {error && (
                 <div className={"text-red-500"}>{error}</div>
             )}
-            <form className={"flex flex-col gap-4 w-full"} onSubmit={handleFormSubmit}>
+            <form className={"flex flex-col gap-4 w-full"} onSubmit={submitForm}>
                 <Input name={"name"} label={"Nickname"} form={form?.name}
                        setForm={setForm}/>
                 <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />

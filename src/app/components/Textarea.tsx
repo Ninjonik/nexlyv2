@@ -15,6 +15,7 @@ import GifPicker from "gif-picker-react";
 import Tippy from "@tippyjs/react";
 import EmojiPicker, {EmojiClickData, EmojiStyle} from "emoji-picker-react";
 import {Loading} from "@/app/components/Loading";
+import Dropzone, {useDropzone} from "react-dropzone";
 
 
 interface TextareaProps {
@@ -159,17 +160,24 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
         }
     }, []);
 
+    const { getRootProps, getInputProps } = useDropzone({
+        noClick: true,
+        onDrop: (files: File[]) => setAttachments((prevAttachments: File[]) => [...prevAttachments, ...files]),
+    });
+
     return (
-        <div className={"w-full flex flex-col bg-base-300 rounded-lg px-2 py-1"}>
+        <div className={"w-full flex flex-col bg-base-300 rounded-lg px-2 py-1"} {...getRootProps()}>
             <ul className={"flex flex-row gap-4 overflow-x-scroll max-w-screen no-scrollbar"}>
                 {attachments?.map((attachment: File, index) => {
                     const fileExtension = attachment.name.split('.').pop()?.toLowerCase() || 'png';
                     const fileIconStyles = defaultStyles[fileExtension as DefaultExtensionType] || defaultStyles.png;
 
                     return (
-                        <li className={"bg-base-300 border-primary border rounded-xl p-2 h-48 w-48 flex flex-col justify-between items-center relative"} key={index}>
+                        <li className={"bg-base-300 border-primary border rounded-xl p-2 h-48 w-48 flex flex-col justify-between items-center relative"}
+                            key={index}>
                             <div className={"absolute right-1 top-1"}>
-                                <Anchor title={"Remove attachment"} hideTitle={true} icon={<AiOutlineDelete/>} size={"2xl"}
+                                <Anchor title={"Remove attachment"} hideTitle={true} icon={<AiOutlineDelete/>}
+                                        size={"2xl"}
                                         className={"rounded-full"} action={() => removeAttachment(index)}/>
                             </div>
                             <div className={"w-32 h-32 flex justify-center items-center pt-4"}>
@@ -195,7 +203,8 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                 <div className={"flex justify-center items-center"}>
 
                     <label>
-                        <input type="file" className="hidden" name="file1" max={5} multiple={true} onChange={updateAttachments}/>
+                        <input type="file" className="hidden" name="file1" max={5} multiple={true} {...getInputProps()}
+                               onChange={updateAttachments}/>
                         <Anchor icon={<FaPlus/>} title={"Add attachment"} hideTitle={true} size={"2xl"}
                                 className={"p-2"}/>
                     </label>
@@ -215,7 +224,8 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                     <Tippy
                         content={
                             <GifPicker
-                                tenorApiKey={process.env.NEXT_PUBLIC_TENOR_KEY || "no_tenor_api_key"} onGifClick={(e: { url: string }) => handleSubmit(e.url)}
+                                tenorApiKey={process.env.NEXT_PUBLIC_TENOR_KEY || "no_tenor_api_key"}
+                                onGifClick={(e: { url: string }) => handleSubmit(e.url)}
                             />
                         }
                         trigger={"click"}
@@ -231,7 +241,8 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                     </Tippy>
                     <Tippy
                         content={
-                            <EmojiPicker emojiStyle={EmojiStyle.TWITTER} onEmojiClick={(emoji: EmojiClickData) => setText((prevText) => prevText + " " + emoji.emoji)} />
+                            <EmojiPicker emojiStyle={EmojiStyle.TWITTER}
+                                         onEmojiClick={(emoji: EmojiClickData) => setText((prevText) => prevText + " " + emoji.emoji)}/>
                         }
                         trigger={"click"}
                         interactive={true}

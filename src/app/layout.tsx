@@ -3,6 +3,7 @@ import "./globals.css";
 import {ClientWrapper} from "@/app/ClientWrapper";
 import {UserContextProvider} from "@/app/utils/UserContext";
 import 'react-photo-view/dist/react-photo-view.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata: Metadata = {
     title: "Nexly",

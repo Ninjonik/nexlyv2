@@ -39,11 +39,11 @@ export const Message = ({ message, temporary } : MessageProps) => {
                 setOwn(false);
             }
         }
-    }, [user, message]);
+    }, [user, message.author.$id]);
 
     useEffect(() => {
         setAvatar(getAvatar(message.author.avatar));
-    }, [message]);
+    }, [message.author.avatar]);
 
     useEffect(() => {
         const fetchAttachmentsData = async () => {
@@ -54,7 +54,6 @@ export const Message = ({ message, temporary } : MessageProps) => {
             }));
             setAttachmentsData(attachmentsData.filter(Boolean) as getFileDataResult[]);
         };
-
 
         fetchAttachmentsData();
     }, [message.attachments]);

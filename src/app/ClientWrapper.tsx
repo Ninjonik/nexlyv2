@@ -6,6 +6,7 @@ import {LoadingFullscreen} from "@/app/components/LoadingFullscreen";
 import {useRouter} from "next/navigation";
 import {UserContextProvider, useUserContext} from "@/app/utils/UserContext";
 import {account} from "@/app/utils/appwrite";
+import {ToastContainer} from "react-toastify";
 
 export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
 
@@ -89,6 +90,7 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
     return (
         <>
             {children}
+            <ToastContainer />
         </>
     );
 };

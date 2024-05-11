@@ -10,6 +10,7 @@ import generateRandomString from "@/app/utils/generateRandomString";
 import {useUserContext} from "@/app/utils/UserContext";
 import {ID} from "appwrite";
 import {bool} from "prop-types";
+import {toast} from "react-toastify";
 
 export interface IndexFormInterface {
     name: string,
@@ -29,6 +30,20 @@ export const IndexForm = () => {
     const [tab, setTab] = useState<boolean>(true);
     const router = useRouter();
     const { getUserData } = useUserContext();
+
+    const submitForm = (e: SyntheticEvent) => {
+        toast.promise(
+            handleFormSubmit(e),
+            {
+                pending: 'Joining room...',
+                success: 'Room joined!',
+                error: 'There was an error while joining the room...'
+            },
+            {
+                autoClose: 2000,
+            }
+        )
+    }
 
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
@@ -209,7 +224,7 @@ export const IndexForm = () => {
             {error && (
                 <div className={"text-red-500"}>{error}</div>
             )}
-            <form className={"flex flex-col justify-center gap-4 w-full"} onSubmit={handleFormSubmit}>
+            <form className={"flex flex-col justify-center gap-4 w-full"} onSubmit={submitForm}>
 
                 <div role="tablist" className="tabs tabs-boxed">
                     <a role="tab" className={`tab text-primary ${tab && "tab-active"}`} onClick={() => setTab(true)}>Join a room</a>
@@ -225,7 +240,8 @@ export const IndexForm = () => {
 
                             <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
                                    setForm={setForm}/>
-                            <Input name={"roomDescription"} label={"‎"} form={form?.roomDescription}
+                            <Input name={"roomDescription"} label={"‎"} form
+                                ={form?.roomDescription}
                                    setForm={setForm} color={"secondary"} className={"invisible"}/>
                             <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
 
