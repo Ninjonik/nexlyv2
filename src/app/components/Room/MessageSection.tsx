@@ -47,6 +47,8 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
     }, [room.$id]);
 
     useEffect(() => {
+        fetchData();
+
         const unsubscribe = client.subscribe(`databases.${database}.collections.messages.documents`, response => {
             // Check if a new message was created (message from other groups will not be shown since user doesn't have the permissions to even see them - no need to take care of this)
             if(response.events.includes("databases.*.collections.messages.documents.*.create")){
@@ -71,8 +73,7 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
             setHasMore(false);
         }
 
-        fetchData();
-    }, []);
+    }, [messages]);
 
     // console.info("MESSAGESs: ", messages, "HASMORE: ", hasMore, "LAST LOADED MESSAGE ID:", lastLoadedMessageId);
 
