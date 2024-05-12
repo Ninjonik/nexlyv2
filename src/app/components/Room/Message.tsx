@@ -2,7 +2,7 @@
 
 import {Avatar} from "@/app/components/Avatar";
 import MessageInterface from "@/app/utils/interfaces/MessageInterface";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import formatTimestampToDate from "@/app/utils/formatTimestampToDate";
 import formatTimestampToTime from "@/app/utils/formatTimestampToTime";
 import {useUserContext} from "@/app/utils/UserContext";
@@ -19,6 +19,7 @@ import remarkGfm from "remark-gfm";
 import {isValidImageUrl} from "@/app/utils/isValidImageUrl";
 import rehypeHighlight from "rehype-highlight";
 import Twemoji from 'react-twemoji';
+import {AttachmentList} from "@/app/components/Room/AttachmentList";
 
 interface MessageProps {
     message: MessageInterface;
@@ -30,6 +31,19 @@ export const Message = ({ message, temporary } : MessageProps) => {
     const [avatar, setAvatar] = useState<string | undefined>(undefined);
     const {user, setUser} = useUserContext();
     const [attachmentsData, setAttachmentsData] = useState<getFileDataResult[]>([]);
+
+    let i = 0;
+
+    const fetchAttachmentsData = useMemo(() => {
+        return async () => {
+            const attachmentsData = await Promise.all(message.attachments.map(async (attachmentId: string) => {
+                const { preview, file, extension } = await getFileData("attachments", attachmentId);
+                if (!preview ||!file ||!extension) return null;
+                return { preview, file, extension };
+            }));
+            setAttachmentsData(attachmentsData.filter(Boolean) as getFileDataResult[]);
+        };
+    }, [message.attachments]);
 
     useEffect(() => {
         if(user) {
@@ -46,15 +60,6 @@ export const Message = ({ message, temporary } : MessageProps) => {
     }, [message.author.avatar]);
 
     useEffect(() => {
-        const fetchAttachmentsData = async () => {
-            const attachmentsData = await Promise.all(message.attachments.map(async (attachmentId: string) => {
-                const { preview, file, extension } = await getFileData("attachments", attachmentId);
-                if (!preview || !file || !extension) return null;
-                return { preview, file, extension };
-            }));
-            setAttachmentsData(attachmentsData.filter(Boolean) as getFileDataResult[]);
-        };
-
         fetchAttachmentsData();
     }, [message.attachments]);
 
@@ -89,35 +94,10 @@ export const Message = ({ message, temporary } : MessageProps) => {
                             <Twemoji options={{ className: 'twemoji' }}><Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>{message.message}</Markdown></Twemoji>
                         </div>
                 ))}
-                {attachmentsData.length > 0 && (
-                    <div className={"flex flex-col gap-2"}>
-                        {attachmentsData.map(({ preview, file, extension }, index) => (
-                            <div key={index} className={"max-h-96 max-w-96 relative lg:pr-16"}>
-                                {preview && file && extension && (
-                                    <>
-                                        {["image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp"].includes(file.mimeType) ? (
-                                                <PhotoView key={index} src={preview}>
-                                                    <img
-                                                        className={`rounded-b-lg ease-in object-fit ${own ? "rounded-l-md bg-primary text-base-100" : "rounded-r-md bg-base-300 text-left"}`}
-                                                        alt={file.name}
-                                                        src={preview}
-                                                    />
-                                                    </PhotoView>
-                                        ) : (
-                                            <FileIcon extension={extension} {...(defaultStyles[extension as DefaultExtensionType] || defaultStyles.png)} />
-                                        )}
-                                        <div className={"bottom-0 right-0 absolute"}>
-                                            <Anchor title={"Download the file"} hideTitle={true} icon={<AiOutlineDownload/>} href={getFileDownload("attachments", file?.$id)} download={true}/>
-                                        </div>
-                                    </>
-
-                                )}
-
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <MemoizedAttachmentList attachmentsData={attachmentsData} own={own} />
             </div>
         </div>
     );
 };
+
+const MemoizedAttachmentList = React.memo(AttachmentList);

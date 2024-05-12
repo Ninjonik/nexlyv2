@@ -39,9 +39,6 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
             lastLoadedMessageId.current = transformedMessages[transformedMessages.length - 1].$id
             setHasMore(true);
         } else {
-            // console.info("TRANSFORMED MESSAGES: ", transformedMessages)
-            // console.info("QUERY: ", query)
-            // console.info("SETHASMORE: FALSE | TRANSFORMEED MESSAGES LENGTH: ", transformedMessages.length)
             setHasMore(false);
         }
     }, [room.$id]);
@@ -69,13 +66,10 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
             lastLoadedMessageId.current = messages[messages.length - 1].$id
             setHasMore(true);
         } else {
-            // console.info("SETHASMORE: FALSE | MESSAGES LENGTH: ", messages.length)
             setHasMore(false);
         }
 
     }, [messages]);
-
-    // console.info("MESSAGESs: ", messages, "HASMORE: ", hasMore, "LAST LOADED MESSAGE ID:", lastLoadedMessageId);
 
     return (
         <InfiniteScroll
@@ -94,7 +88,7 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
             )}
             {
                 messages.map((message: MessageInterface, key: number) => (
-                    <Message key={key} message={message} />
+                    <Message key={message.$id} message={message} />
                 ))
             }
             </PhotoProvider>

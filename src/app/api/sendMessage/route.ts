@@ -58,7 +58,5 @@ export async function POST(req: Request, res: Response) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
 
-    console.log("CREATING MESSAGE FOR ACC: ", account.name)
-
     return await apiHandler(message, attachments, roomId, account.$id);
 }

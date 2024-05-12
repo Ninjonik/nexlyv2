@@ -45,8 +45,9 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
 
         window.addEventListener('resize', handleWindowSizeChange);
 
-        const unsubscribe = client.subscribe(`databases.${database}.collections.rooms.documents`, response => {
-            if(response.events.includes(`databases.*.collections.rooms.documents.${room.$id}.update`)){
+        const unsubscribe = client.subscribe(`databases.*.collections.rooms.documents.*.update`, response => {
+            console.info(response);
+            if(response.events.includes(`databases.*.collections.rooms.documents.${room.$id}.*`)){
                 const newRoomPayload = response.payload as Room
                 console.info("UPDATED ROOM: ", newRoomPayload)
                 setRoom(newRoomPayload);
@@ -100,7 +101,7 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
 
                     <div className={"flex flex-col gap-3 max-h-96 overflow-y-scroll no-scrollbar"}>
                         {room.users.map((user, index) => (
-                            <ListUser key={index} user={user}/>
+                            <ListUser key={user.$id} user={user}/>
                         ))}
                     </div>
                 </div>
