@@ -42,13 +42,13 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             if (roomPattern.test(path)) {
                 // If the user is on a "/room/[x]" path, no need to redirect
                 console.info("User is on a valid path.");
-            } else if (genericPattern.test(path)) {
+            } else if (genericPattern.test(path) && !["/register", "/login", "/logout"].includes(path)) {
                 // If the user is on a "/[x]" path, redirect to "/room/[x]"
                 const newPath = path.replace(/^\/([^\/]+)$/, '/room/$1');
                 router.push(process.env.NEXT_PUBLIC_HOSTNAME + newPath);
             } else {
-                // If the user is on any other path, redirect to "/"
-                router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
+                // If the user is on any other path, don't redirect to "/"
+                // router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
             }
         };
 

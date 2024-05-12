@@ -1,6 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import {Avatar} from "@/app/components/Avatar";
+import Tippy from "@tippyjs/react";
+import {IndexProfile} from "@/app/components/Index/IndexProfile";
 
 export const HomeBase = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -10,6 +13,7 @@ export const HomeBase = ({ children }: { children: React.ReactNode }) => {
             </div>
             <div className={"max-h-4/5 sm:w-4/5 md:w-3/5 lg:w-1/3 bg-base-100 rounded-xl flex flex-col items-center text-center p-8 gap-8 z-50 overflow-y-auto"}>
                 <div className={"flex flex-col gap-4 text-center justify-center items-center"}>
+                    <IndexProfile />
                     <Link href="/">
                         <Image src={"/img/nexly.png"} width={150} height={150} alt={"Nexly logo"} />
                     </Link>

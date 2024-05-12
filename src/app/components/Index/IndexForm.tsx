@@ -100,6 +100,7 @@ export const IndexForm = () => {
                     avatarValue = avatarRes.$id;
                 } catch (e) {
                     console.warn("Invalid avatar file type.");
+                    return setError("Invalid avatar file type.");
                 }
             }
 
@@ -161,6 +162,7 @@ export const IndexForm = () => {
                     avatarValue = avatarRes.$id;
                 } catch (e) {
                     console.warn("Invalid avatar file type.");
+                    return setError("Invalid avatar file type.");
                 }
             }
 
