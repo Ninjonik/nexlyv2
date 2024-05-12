@@ -6,8 +6,8 @@ import Link from "next/link";
 
 export const IndexProfile = () => {
     return (
-        <div className={"relative w-full"}>
-            <div className={"absolute right-0 top-0"}>
+        <div className={"-mt-8 relative w-full"}>
+            <div className={"absolute right-0 top-0 mt-8"}>
                 <div className="dropdown dropdown-end">
                     <button><Avatar/></button>
                     <ul tabIndex={0}

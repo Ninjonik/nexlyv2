@@ -260,10 +260,10 @@ export const IndexForm = () => {
                                    color={"secondary"}/>
                             <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription}
                                    setForm={setForm} color={"secondary"}/>
-                            <div className={"flex flex-row justify-evenly"}>
+                            <div className={"flex flex-col md:flex-row justify-evenly"}>
                                 <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} color={"secondary"} />
                                 <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"} color={"secondary"}
-                                              avatarText={"Select group's avatar"}/>
+                                              avatarText={"Select room's avatar"}/>
                             </div>
 
                             {loading ? (

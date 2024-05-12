@@ -7,7 +7,7 @@ import {IndexProfile} from "@/app/components/Index/IndexProfile";
 
 export const HomeBase = ({ children }: { children: React.ReactNode }) => {
     return (
-        <main className={"w-full h-full flex flex-col justify-center items-center p-8"}>
+        <main className={"w-full h-full flex flex-col justify-center items-center p-2 md:p-8"}>
             <div className={"h-screen w-screen absolute"}>
                 <img src={"/backgroundDark.svg"} alt={"Background image"} className={"w-full h-full object-cover"} />
             </div>
