@@ -18,8 +18,8 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", id: st
             ]
         );
 
-        if(newUser && newUser.room && newUser.room.$id) return Response.json({ newUser: newUser });
-        return Response.json({ error: "Unknown error." }, { status: 500 })
+        if(newUser) return Response.json({ newUser: newUser });
+        return Response.json({ error: "Unknown error." }, { status: 400 })
     } catch(e: any) {
         console.error(e);
         console.info(e.message);

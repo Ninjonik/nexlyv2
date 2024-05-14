@@ -1,6 +1,7 @@
 import {database, databases} from "@/app/utils/appwrite-server";
 import {ID, Permission, Role} from "appwrite";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
+import {generate} from "random-words";
 
 const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomName: string, roomDescription: string, roomAvatar: string = "defaultAvatar", id: string) => {
 
@@ -10,7 +11,10 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomNa
 
         while (codeExists) {
             // Generate a new 7-character code (numbers/alphabet/uppercase)
-            generatedCode = Math.random().toString(36).substring(2, 9).toUpperCase();
+            // generatedCode = Math.random().toString(36).substring(2, 9).toUpperCase();
+
+            // Generate a new 6-7 character code (based off random words)
+            generatedCode = generate({ minLength: 6, maxLength: 7 });
 
             // Check if the code already exists in the database
             const res = await fetch(

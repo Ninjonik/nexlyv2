@@ -29,9 +29,9 @@ export const RegisterForm = () => {
         toast.promise(
             handleFormSubmit(e),
             {
-                pending: 'Joining room...',
-                success: 'Room joined!',
-                error: 'There was an error while joining the room...'
+                pending: 'Creating account...',
+                success: 'Account created!',
+                error: 'There was an error while creating an account...'
             },
             {
                 autoClose: 2000,
@@ -44,26 +44,39 @@ export const RegisterForm = () => {
 
         setLoading(true);
 
-        if(!form?.avatar || !form?.email || !form.password) return setError("Please fill all the fields.")
+        if(!form?.name || !form?.email || !form.password){
+            setLoading(false);
+            return setError("Please fill all the fields.");
+        }
         const name = form?.name
         const email = form?.email
         const password = form?.password
         const avatar = form?.avatar
 
         try {
-            await account.deleteSessions()
+            await account.deleteSessions();
         } catch (e) {
-            console.info("no session")
+            console.info("no session");
         }
 
-        const newAccount = await account.create(
-            ID.unique(),
-            email,
-            password,
-            name
-        )
-        const newSesssion = await account.createEmailPasswordSession(email, password);
-        const jwt = await account.createJWT();
+        console.log("a")
+
+        try {
+            const newAccount = await account.create(
+                ID.unique(),
+                email,
+                password,
+                name
+            )
+            const newSesssion = await account.createEmailPasswordSession(email, password);
+            const jwt = await account.createJWT();
+        } catch (e){
+            console.info(e);
+            setLoading(false)
+            return setError(e.message);
+        }
+
+        console.log("b")
 
         let avatarValue = "defaultAvatar";
         if(form?.avatar){
@@ -80,6 +93,8 @@ export const RegisterForm = () => {
             }
         }
 
+        console.log("c")
+
         /* Create user in the database collection */
         const res = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/createAccount`,
@@ -95,16 +110,22 @@ export const RegisterForm = () => {
                 }),
             }
         )
+        console.log(res);
+        console.log("c.1")
         const resJson = await res.json();
         if(resJson?.error){
             setLoading(false)
+            console.log("c.2")
             return setError(resJson.error);
         }
 
+        console.log("d")
+
         await getUserData();
-        router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
-        router.refresh()
-        setLoading(false)
+        console.info("Account created successfully.", resJson);
+        // router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
+        // router.refresh()
+        setLoading(false);
         return;
 
     }, [form, getUserData, router])
