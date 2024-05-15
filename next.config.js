@@ -1,13 +1,15 @@
 const withPWA = require('next-pwa')({
     dest: 'public',
     cacheOnFrontEndNav : true,
-    aggresiveFrontEndNavCaching : true,
+    //aggresiveFrontEndNavCaching : true,
     reloadOnOnline : true,
-    swcMinify : true,
+    //swcMinify : true,
     disable : false,
-    workboxOptions: {
+/*   
+ workboxOptions: {
         disableDevLogs: true,
     }
+*/
 })
 
 module.exports = withPWA({

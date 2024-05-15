@@ -61,6 +61,8 @@ export const RegisterForm = () => {
 
         console.log("a")
 
+        let jwt: any = "";
+
         try {
             const newAccount = await account.create(
                 ID.unique(),
@@ -69,8 +71,8 @@ export const RegisterForm = () => {
                 name
             )
             const newSesssion = await account.createEmailPasswordSession(email, password);
-            const jwt = await account.createJWT();
-        } catch (e){
+            jwt = await account.createJWT();
+        } catch (e: any){
             console.info(e);
             setLoading(false)
             return setError(e.message);

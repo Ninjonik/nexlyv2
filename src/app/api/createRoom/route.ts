@@ -14,7 +14,7 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomNa
             // generatedCode = Math.random().toString(36).substring(2, 9).toUpperCase();
 
             // Generate a new 6-7 character code (based off random words)
-            generatedCode = generate({ minLength: 6, maxLength: 7 });
+            generatedCode = generate({ minLength: 6, maxLength: 7 }) as string;
 
             // Check if the code already exists in the database
             const res = await fetch(
