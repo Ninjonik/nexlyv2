@@ -108,7 +108,7 @@ export const RegisterForm = () => {
                 body: JSON.stringify({
                     "name": name,
                     "avatar": avatarValue,
-                    "jwt": jwt
+                    "jwt": jwt.jwt
                 }),
             }
         )

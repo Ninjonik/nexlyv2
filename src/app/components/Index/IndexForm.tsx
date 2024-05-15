@@ -115,7 +115,7 @@ export const IndexForm = () => {
                         "roomCode": roomCode,
                         "name": form?.name,
                         "avatar": avatarValue,
-                        "jwt": jwt
+                        "jwt": jwt.jwt
                     }),
                 }
             )
@@ -193,7 +193,7 @@ export const IndexForm = () => {
                         "roomName": form?.roomName,
                         "roomDescription": form?.roomDescription,
                         "roomAvatar": RoomAvatarValue,
-                        "jwt": jwt
+                        "jwt": jwt.jwt
                     }),
                 }
             )

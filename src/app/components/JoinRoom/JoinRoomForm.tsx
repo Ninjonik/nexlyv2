@@ -105,7 +105,7 @@ export const JoinRoomForm = ({ roomCode } : JoinRoomFormProps) => {
                     "roomCode": roomCode,
                     "name": form?.name,
                     "avatar": avatarValue,
-                    "jwt": jwt
+                    "jwt": jwt.jwt
                 }),
             }
         )

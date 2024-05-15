@@ -109,7 +109,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "jwt": jwt,
+                    "jwt": jwt.jwt,
                     "message": message,
                     "attachments": attachmentIds,
                     "roomId": room.$id

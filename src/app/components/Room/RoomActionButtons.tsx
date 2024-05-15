@@ -43,7 +43,7 @@ export const RoomActionButtons = ({ room, inCall, setInCall, usersHidden, setUse
                     },
                     body: JSON.stringify({
                         "roomId": room.$id,
-                        "jwt": jwt
+                        "jwt": jwt.jwt
                     }),
                 }
             )

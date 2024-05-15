@@ -54,7 +54,7 @@ export async function POST(req: Request, res: Response) {
     // VERIFY JWT
     let account;
     try {
-        clientJWT.setJWT(jwt.jwt);
+        clientJWT.setJWT(jwt);
         account = await accountJWT.get()
         if(!account || !account.$id) {
             return Response.json({ error: 'Invalid JWT' }, { status: 401 })
