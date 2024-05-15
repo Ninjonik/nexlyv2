@@ -45,11 +45,17 @@ export async function PATCH(req: Request, res: Response) {
     }
 
     // VERIFY JWT
-    clientJWT.setJWT(jwt.jwt);
-    const account = await accountJWT.get()
-    if(!account || !account.$id) {
+    let account;
+    try {
+        clientJWT.setJWT(jwt.jwt);
+        account = await accountJWT.get()
+        if(!account || !account.$id) {
+            return Response.json({ error: 'Invalid JWT' }, { status: 401 })
+        }
+    } catch (e) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
+
 
     return apiHandler(roomCode, name, avatar, account.$id);
 }
