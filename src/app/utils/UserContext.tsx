@@ -32,6 +32,7 @@ export const UserContextProvider = ({ children }: UserContextProps) => {
     const getUserData = async () => {
         try {
             const acc = await account.get();
+            console.info("ACC   :", acc);
             const userStorage = localStorage.getItem("user");
             let avatar = "defaultAvatar";
             if(userStorage){
