@@ -22,21 +22,23 @@ export default async ({
 
     if (req.method === 'POST') {
         const removedUserId = req.body.userId;
+        console.log(removedUserId);
+        // Only delete anonymous accounts
+        if(req.body.provider === 'anonymous') return res.json({
+            success: true,
+            message: 'Not deleting non-anonymous account.',
+        });
 
         try {
-            console.log(req.body);
-            console.log(req.body.userId);
             await database.deleteDocument('nexly', 'users', removedUserId);
         } catch (err) {
-            error('Error deleting user record:', err);
-            error(err.message);
+            console.log(`Can't delete user record.`);;
         }
 
         try {
             await users.delete(removedUserId);
         } catch (e) {
-            error('Error deleting user account:', err);
-            error(err.message);
+            console.log(`Can't delete user account.`);
         }
 
         return res.json({

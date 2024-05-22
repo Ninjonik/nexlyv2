@@ -7,7 +7,11 @@ const removeExistingUserAccount = async () => {
         if(localUser && !localUser?.email){
             localStorage.removeItem("user")
             console.warn("DELETING SESSIONS")
-            await account.deleteSessions()
+            try {
+                await account.deleteSessions();
+            } catch (e) {
+                console.info("NO SESSION");
+            }
             return false;
         }
         if(localUser && localUser.email){

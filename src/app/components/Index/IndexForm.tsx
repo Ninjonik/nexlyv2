@@ -11,6 +11,7 @@ import {useUserContext} from "@/app/utils/UserContext";
 import {ID} from "appwrite";
 import {bool} from "prop-types";
 import {toast} from "react-toastify";
+import isPermanentAccount from "@/app/utils/isPermanentAccount";
 
 export interface IndexFormInterface {
     name: string,
@@ -79,30 +80,35 @@ export const IndexForm = () => {
 
             /* Room exists and is open for new users */
 
-            try {
-                await account.deleteSessions()
-            } catch (e) {
-                console.info("no session")
-            }
-
-            const newAnonymousSession = await account.createAnonymousSession()
-            await account.updateName(form?.name || "Anonymous")
-            const jwt = await account.createJWT()
-
             let avatarValue = "defaultAvatar";
-            if(form?.avatar){
+            const permanentAccount = await isPermanentAccount();
+
+            /* Check whether user has a permanent account */
+            if(!permanentAccount){
                 try {
-                    const avatarRes = await storage.createFile(
-                        "avatars",
-                        ID.unique(),
-                        form.avatar
-                    )
-                    avatarValue = avatarRes.$id;
+                    await account.deleteSessions();
                 } catch (e) {
-                    console.warn("Invalid avatar file type.");
-                    return setError("Invalid avatar file type.");
+                    console.info("no session");
+                }
+                const newAnonymousSession = await account.createAnonymousSession();
+                await account.updateName(form?.name || "Anonymous");
+
+                if(form?.avatar){
+                    try {
+                        const avatarRes = await storage.createFile(
+                            "avatars",
+                            ID.unique(),
+                            form.avatar
+                        );
+                        avatarValue = avatarRes.$id;
+                    } catch (e) {
+                        console.warn("Invalid avatar file type.");
+                        return setError("Invalid avatar file type.");
+                    }
                 }
             }
+
+            const jwt = await account.createJWT()
 
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
@@ -126,11 +132,13 @@ export const IndexForm = () => {
                 return setError(joinResJson.error);
             }
 
-            localStorage.setItem("user", JSON.stringify({
-                name: form?.name || "Anonymous",
-                avatar: avatarValue,
-                $id: joinResJson.newUser.$id,
-            }));
+            if(!permanentAccount){
+                localStorage.setItem("user", JSON.stringify({
+                    name: form?.name || "Anonymous",
+                    avatar: avatarValue,
+                    $id: joinResJson.newUser.$id,
+                }));
+            }
 
             await getUserData();
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);

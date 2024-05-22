@@ -3,7 +3,7 @@ import {Query, Permission, Role} from "node-appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 
-const apiHandler = async (roomCode: string, name: string, avatar: string, id: string) => {
+const apiHandler = async (roomCode: string, name: string, avatar: string, id: string, permanentAccount: boolean) => {
     const roomQuery = await databases.listDocuments(
         database,
         "rooms",
@@ -15,19 +15,35 @@ const apiHandler = async (roomCode: string, name: string, avatar: string, id: st
 
     if (roomQuery && roomQuery.documents && roomQuery.documents[0]) {
         const roomData = roomQuery.documents[0]
-        const newUser = await databases.createDocument(
-            database,
-            "users",
-            id,
-            {
-                name: name,
-                avatar: avatar,
-                room: roomData.$id
-            },
-            [
-                Permission.read(Role.any())
-            ]
-        )
+        let newUser;
+        if(permanentAccount) {
+            newUser = await databases.updateDocument(
+                database,
+                "users",
+                id,
+                {
+                    room: roomData.$id
+                },
+                [
+                    Permission.read(Role.any())
+                ]
+            )
+        } else {
+            newUser = await databases.createDocument(
+                database,
+                "users",
+                id,
+                {
+                    name: name,
+                    avatar: avatar,
+                    room: roomData.$id
+                },
+                [
+                    Permission.read(Role.any())
+                ]
+            )
+        }
+
 
         return Response.json({ success: 'Room successfully joined..', newUser: newUser }, { status: 200 })
     } else {
@@ -45,11 +61,15 @@ export async function PATCH(req: Request, res: Response) {
 
     // VERIFY JWT
     let account;
+    let permanentAccount = false;
     try {
         clientJWT.setJWT(jwt);
-        account = await accountJWT.get()
+        account = await accountJWT.get();
         if(!account || !account.$id) {
             return Response.json({ error: 'Invalid JWT' }, { status: 401 })
+        }
+        if(account?.email){
+            permanentAccount = true;
         }
     } catch (e) {
         console.log(e);
@@ -57,5 +77,5 @@ export async function PATCH(req: Request, res: Response) {
     }
 
 
-    return apiHandler(roomCode, name, avatar, account.$id);
+    return apiHandler(roomCode, name, avatar, account.$id, permanentAccount);
 }
