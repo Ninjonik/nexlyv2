@@ -23,7 +23,7 @@ export default async ({
         const removedUserId = req.body.userId;
         console.log(removedUserId);
         // Only delete anonymous accounts
-        if(req.body.provider === 'anonymous') return res.json({
+        if(req.body.provider !== 'anonymous') return res.json({
             success: true,
             message: 'Not deleting non-anonymous account.',
         });
