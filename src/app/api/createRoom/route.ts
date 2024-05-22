@@ -1,7 +1,7 @@
 import {database, databases} from "@/app/utils/appwrite-server";
-import {ID, Permission, Role} from "appwrite";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 import {generate} from "random-words";
+import {Permission, Role} from "node-appwrite";
 
 const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomName: string, roomDescription: string, roomAvatar: string = "defaultAvatar", id: string) => {
 

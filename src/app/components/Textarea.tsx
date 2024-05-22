@@ -174,7 +174,7 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
 
                     return (
                         <li className={"bg-base-300 border-primary border rounded-xl p-2 h-48 w-48 flex flex-col justify-between items-center relative"}
-                            key={index}>
+                            key={"attachment" + index}>
                             <div className={"absolute right-1 top-1"}>
                                 <Anchor title={"Remove attachment"} hideTitle={true} icon={<AiOutlineDelete/>}
                                         size={"2xl"}

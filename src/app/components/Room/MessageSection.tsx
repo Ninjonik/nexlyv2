@@ -87,7 +87,7 @@ export const MessageSection = ({ messages, setMessages, room, temporaryMessage, 
                 <Message message={temporaryMessage} temporary={true} />
             )}
             {
-                messages.map((message: MessageInterface, key: number) => (
+                messages.map((message: MessageInterface) => (
                     <Message key={message.$id} message={message} />
                 ))
             }

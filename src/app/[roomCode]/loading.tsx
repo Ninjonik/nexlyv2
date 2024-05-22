@@ -26,7 +26,7 @@ export default function LoadingRoom () {
                     id="scrollableDiv">
                     <div className={"flex flex-col-reverse gap-6 p-4 w-full"}>
                         {Array.from(Array(10).keys()).map((number) => (
-                            <div className={`flex flex-row w-1/2 gap-4 place-self-start animate-pulse`} key={number}>
+                            <div className={`flex flex-row w-1/2 gap-4 place-self-start animate-pulse`} key={"roomCodeLoading" + number}>
                                 <div className={`avatar`}>
                                     <div className="w-16 mask mask-squircle bg-base-300">
                                     </div>
@@ -63,7 +63,7 @@ export default function LoadingRoom () {
 
                     <div className={"flex flex-col gap-3"}>
                         {Array.from(Array(5).keys()).map((number) => (
-                            <div className={"flex flex-row items-center gap-2 animate-pulse"} key={number}>
+                            <div className={"flex flex-row items-center gap-2 animate-pulse"} key={"roomCodeLoading2" + number}>
                                 <div className={`avatar`}>
                                     <div className="w-16 mask mask-squircle bg-base-300">
                                     </div>

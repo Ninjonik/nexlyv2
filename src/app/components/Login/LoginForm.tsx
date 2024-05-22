@@ -10,16 +10,14 @@ import {useUserContext} from "@/app/utils/UserContext";
 import {ID} from "appwrite";
 import {toast} from "react-toastify";
 
-export interface RegisterFormInterface {
-    avatar: File,
-    name: string,
+export interface LoginFormInterface {
     email: string,
     password: string,
 }
 
-export const RegisterForm = () => {
+export const LoginForm = () => {
 
-    const [form, setForm] = useState<RegisterFormInterface | undefined>()
+    const [form, setForm] = useState<LoginFormInterface | undefined>()
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
@@ -29,9 +27,9 @@ export const RegisterForm = () => {
         toast.promise(
             handleFormSubmit(e),
             {
-                pending: 'Creating account...',
-                success: 'Account created!',
-                error: 'There was an error while creating an account...'
+                pending: 'Logging in...',
+                success: 'Logged in!',
+                error: 'There was an error while logging you in...'
             },
             {
                 autoClose: 2000,
@@ -44,11 +42,10 @@ export const RegisterForm = () => {
 
         setLoading(true);
 
-        if(!form?.name || !form?.email || !form.password){
+        if(!form?.email || !form.password){
             setLoading(false);
             return setError("Please fill all the fields.");
         }
-        const name = form?.name
         const email = form?.email
         const password = form?.password
 
@@ -62,12 +59,6 @@ export const RegisterForm = () => {
         let newAccount;
 
         try {
-            newAccount = await account.create(
-                ID.unique(),
-                email,
-                password,
-                name
-            )
             await account.createEmailPasswordSession(email, password);
             jwt = await account.createJWT();
         } catch (e: any){
@@ -76,32 +67,15 @@ export const RegisterForm = () => {
             return setError(e.message);
         }
 
-        let avatarValue = "defaultAvatar";
-        if(form?.avatar){
-            try {
-                const avatarRes = await storage.createFile(
-                    "avatars",
-                    ID.unique(),
-                    form.avatar
-                )
-                avatarValue = avatarRes.$id;
-            } catch (e) {
-                console.warn("Invalid avatar file type.");
-                return setError("Invalid avatar file type.");
-            }
-        }
-
         /* Create user in the database collection */
         const res = await fetch(
-            process.env.NEXT_PUBLIC_HOSTNAME + `/api/createAccount`,
+            process.env.NEXT_PUBLIC_HOSTNAME + `/api/getAccount`,
             {
-                method: "POST",
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    "name": name,
-                    "avatar": avatarValue,
                     "jwt": jwt.jwt
                 }),
             }
@@ -116,10 +90,10 @@ export const RegisterForm = () => {
         await getUserData();
 
         localStorage.setItem("user", JSON.stringify({
-            name: form?.name || "Anonymous",
-            avatar: avatarValue,
-            $id: newAccount.$id,
-            email: newAccount.email,
+            name: resJson.user.name,
+            avatar: resJson.user.avatar,
+            $id: resJson.user.$id,
+            email: email,
         }));
 
         router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
@@ -135,17 +109,14 @@ export const RegisterForm = () => {
                 <div className={"text-red-500"}>{error}</div>
             )}
             <form className={"flex flex-col gap-4 w-full"} onSubmit={submitForm}>
-                <Input name={"name"} label={"Nickname"} form={form?.name} required={true}
-                       setForm={setForm}/>
                 <Input name={"email"} label={"Email"} type={"email"} form={form?.email} required={true}
                        setForm={setForm}/>
                 <Input name={"password"} label={"Password"} type={"password"} form={form?.password} required={true}
                        setForm={setForm}/>
-                <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
                 {loading ? (
-                    <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Creating account..."}/>
+                    <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""} text={"Logging in..."}/>
                 ) : (
-                    <Button color={"primary"} text={"Create an account"} type={"submit"} />
+                    <Button color={"primary"} text={"Log in"} type={"submit"} />
                 )}
             </form>
         </div>

@@ -32,14 +32,14 @@ export const UserContextProvider = ({ children }: UserContextProps) => {
     const getUserData = async () => {
         try {
             const acc = await account.get();
-            console.info("ACC   :", acc);
+            console.info("LOCAL STORAGE ACC:", acc);
             const userStorage = localStorage.getItem("user");
             let avatar = "defaultAvatar";
             if(userStorage){
                 const parsedUser = JSON.parse(userStorage) as UserLocalStorageInterface;
                 avatar = parsedUser.avatar
             } else {
-                return console.info("no user found")
+                return console.info("no user in localstorage found")
             }
             const updatedObject = {...acc, avatar: avatar};
             setUser(updatedObject)
@@ -51,19 +51,8 @@ export const UserContextProvider = ({ children }: UserContextProps) => {
     }
 
     useEffect(() => {
-
         getUserData()
-
-        // const userStorage = localStorage.getItem("user")
-        // if(userStorage){
-        //     const parsedUser = JSON.parse(userStorage) as UserLocalStorageInterface;
-        //     setUser(parsedUser)
-        // } else {
-        //     setUser(null)
-        //     console.info("no user found")
-        // }
-
-    }, [account]);
+    }, []);
 
     return (
         <UserContext.Provider value={{ user, setUser, getUserData }}>

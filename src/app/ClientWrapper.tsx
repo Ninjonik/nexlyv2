@@ -7,6 +7,7 @@ import {useRouter} from "next/navigation";
 import {UserContextProvider, useUserContext} from "@/app/utils/UserContext";
 import {account} from "@/app/utils/appwrite";
 import {ToastContainer} from "react-toastify";
+import removeExistingUserAccount from "@/app/utils/removeExistingUserAccount";
 
 export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
 
@@ -15,25 +16,6 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
     const router = useRouter();
 
     const middlewareFunction = async () => {
-        let loggedIn = false;
-
-        /* Runs on initial page load */
-        const handleLoad = async () => {
-            if(user){
-                localStorage.removeItem("user")
-                console.warn("DELETING SESSIONS")
-                await account.deleteSessions()
-                // navigator.sendBeacon(`/api/deleteUser`,
-                //     JSON.stringify({
-                //         token: user.token
-                //     })
-                // );
-                loggedIn = true;
-            } else {
-                console.info("no user found")
-            }
-        }
-
         const redirectUser = () => {
             const path = window.location.pathname;
             const roomPattern = /^\/room\/[^\/]+$/; // Matches "/room/[x]"
@@ -52,37 +34,18 @@ export const ClientWrapper = ({children} : {children: React.ReactNode}) => {
             }
         };
 
-        await handleLoad()
+        /* Runs on initial page load */
+        const handleLoad = async () => {
+            if(!await removeExistingUserAccount()) return redirectUser();
+        }
 
-        if(!loggedIn) redirectUser();
+        await handleLoad()
 
         setLoading(false);
     }
 
     useEffect(() => {
-
         middlewareFunction()
-
-        /* RUN ON PAGE EXIT */
-        const handleUnload = async () => {
-            console.info("removing cookies data")
-            if(user){
-                localStorage.removeItem("user")
-                console.warn("DELETING SESSIONS ON EXIT")
-                await account.deleteSessions()
-                // navigator.sendBeacon(`/api/deleteUser`,
-                //     JSON.stringify({
-                //         token: user.token
-                //     })
-                // );
-            }
-        };
-        window.addEventListener('beforeunload', handleUnload);
-        /* END */
-
-        return () => {
-            window.removeEventListener('beforeunload', handleUnload);
-        };
     }, []);
 
     if(loading) return <LoadingFullscreen />;

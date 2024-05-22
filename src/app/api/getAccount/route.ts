@@ -1,25 +1,15 @@
 import {database, databases} from "@/app/utils/appwrite-server";
-import {Permission, Role} from "node-appwrite";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
+import {generate} from "random-words";
+import {Permission, Role} from "node-appwrite";
 
-const apiHandler = async (name: string, avatar: string = "defaultAvatar", id: string) => {
+const apiHandler = async (id: string) => {
 
     try {
-        const newUser: any = await databases.createDocument(
-            database,
-            "users",
-            id,
-            {
-                name: name,
-                avatar: avatar,
-            },
-            [
-                Permission.read(Role.any())
-            ]
-        );
+        const userData = await databases.getDocument(database, "users", id);
 
-        if(newUser) return Response.json({ newUser: newUser });
-        return Response.json({ error: "Unknown error." }, { status: 400 })
+        if(userData && userData?.$id) return Response.json({ user: userData });
+        return Response.json({ error: "Unknown error." }, { status: 500 })
     } catch(e: any) {
         console.error(e);
         console.info(e.message);
@@ -28,10 +18,10 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", id: st
 
 }
 
-export async function POST(req: Request, res: Response) {
-    const { name, avatar, jwt } = await req.json();
+export async function GET(req: Request, res: Response) {
+    const { jwt } = await req.json();
 
-    if(!jwt || !name){
+    if(!jwt){
         return Response.json({ error: 'Please fill in all the required fields.' }, { status: 400 })
     }
 
@@ -47,5 +37,5 @@ export async function POST(req: Request, res: Response) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
 
-    return apiHandler(name, avatar, account.$id);
+    return apiHandler(account.$id);
 }

@@ -142,7 +142,7 @@ export const IndexForm = () => {
             setLoading(true);
 
             try {
-                await account.deleteSessions()
+                await account.deleteSessions();
             } catch (e) {
                 console.info("no session")
             }
