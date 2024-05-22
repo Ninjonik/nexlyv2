@@ -2,7 +2,6 @@ import {
     Client,
     Databases,
     Users,
-    Query
 } from 'node-appwrite';
 
 export default async ({
