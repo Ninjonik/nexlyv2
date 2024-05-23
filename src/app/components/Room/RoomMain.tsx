@@ -46,7 +46,6 @@ export const RoomMain = ({room: roomDef, messagesProps}: RoomMainProps) => {
         window.addEventListener('resize', handleWindowSizeChange);
 
         const unsubscribe = client.subscribe(`databases.*.collections.rooms.documents.*.update`, response => {
-            console.info(response);
             if(response.events.includes(`databases.*.collections.rooms.documents.${room.$id}.*`)){
                 const newRoomPayload = response.payload as Room
                 console.info("UPDATED ROOM: ", newRoomPayload)

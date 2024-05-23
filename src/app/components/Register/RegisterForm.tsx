@@ -113,14 +113,14 @@ export const RegisterForm = () => {
             return setError(resJson.error);
         }
 
-        await getUserData();
-
         localStorage.setItem("user", JSON.stringify({
             name: form?.name || "Anonymous",
             avatar: avatarValue,
             $id: newAccount.$id,
             email: newAccount.email,
         }));
+
+        await getUserData();
 
         router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
         router.refresh()

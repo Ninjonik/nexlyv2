@@ -8,12 +8,11 @@ import {account} from "@/app/utils/appwrite";
 
 const Logout = () => {
     const router = useRouter();
-    const {user, setUser} = useUserContext();
+    const {user, logoutUser} = useUserContext();
     if(!user) return router.push("/");
 
     const handleUserLogout = async () => {
-        localStorage.removeItem("user");
-        await account.deleteSessions();
+        await logoutUser();
         router.push("/");
         router.refresh();
     }

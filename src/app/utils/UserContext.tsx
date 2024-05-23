@@ -9,6 +9,7 @@ interface UserContextState {
     user: UserAuthInterface | null;
     setUser: React.Dispatch<React.SetStateAction<UserAuthInterface | null>>;
     getUserData: () => void;
+    logoutUser: () => void;
 }
 
 
@@ -32,13 +33,14 @@ export const UserContextProvider = ({ children }: UserContextProps) => {
     const getUserData = async () => {
         try {
             const acc = await account.get();
-            console.info("LOCAL STORAGE ACC:", acc);
+            console.info("APPWRITE ACC:", acc);
             const userStorage = localStorage.getItem("user");
             let avatar = "defaultAvatar";
             if(userStorage){
                 const parsedUser = JSON.parse(userStorage) as UserLocalStorageInterface;
                 avatar = parsedUser.avatar
             } else {
+                await account.deleteSessions();
                 return console.info("no user in localstorage found")
             }
             const updatedObject = {...acc, avatar: avatar};
@@ -50,12 +52,20 @@ export const UserContextProvider = ({ children }: UserContextProps) => {
 
     }
 
+    const logoutUser = async () => {
+        try {
+            localStorage.removeItem("user");
+            await account.deleteSessions();
+            setUser(null);
+        } catch (e) {}
+    }
+
     useEffect(() => {
         getUserData()
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, getUserData }}>
+        <UserContext.Provider value={{ user, setUser, getUserData, logoutUser }}>
             {children}
         </UserContext.Provider>
     );

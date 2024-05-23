@@ -50,7 +50,6 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
                 event.preventDefault();
                 const message = ref?.current?.value;
                 const attachmentsToSend = attachments || [];
-                console.log(attachments);
                 if(!message && attachmentsToSend.length < 1) return null;
                 handleSubmit(message, attachmentsToSend);
             }
@@ -99,7 +98,6 @@ export const Textarea = ({ className, room, setTemporaryMessage } : TextareaProp
         if(attachmentsToSend.length > 0){
             attachmentIds = await uploadMultipleFiles(attachmentsToSend);
         }
-        console.info(attachmentIds);
 
         const res = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/sendMessage`,

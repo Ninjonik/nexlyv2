@@ -9,8 +9,6 @@ export const onDisconnectedFn = async (roomId: string) => {
             },
         });
 
-        console.log("CHECK CALL STATUS: ", response);
-
         if (!response.ok) {
             throw new Error('Failed to call');
         }

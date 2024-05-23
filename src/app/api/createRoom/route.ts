@@ -2,8 +2,9 @@ import {database, databases} from "@/app/utils/appwrite-server";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
 import {generate} from "random-words";
 import {Permission, Role} from "node-appwrite";
+import User from "@/app/utils/interfaces/UserInterface";
 
-const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomName: string, roomDescription: string, roomAvatar: string = "defaultAvatar", id: string) => {
+const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomName: string, roomDescription: string, roomAvatar: string = "defaultAvatar", id: string, permanentAccount: boolean) => {
 
     const generateUniqueRoomCode = async () => {
         let generatedCode = "";
@@ -44,38 +45,48 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", roomNa
     try {
         const generatedCode = await generateUniqueRoomCode();
 
-        const newUser: any = await databases.createDocument(
-            database,
-            "users",
-            id,
-            {
-                name: name,
-                avatar: avatar,
-                room: {
-                    "$id": generatedCode,
-                    name: roomName,
-                    closed: false,
-                    avatar: roomAvatar,
-                    description: roomDescription,
-                    "$permissions": [
-                        Permission.read(Role.user(id)),
-                        Permission.create(Role.user(id)),
-                        Permission.update(Role.user(id)),
-                        Permission.delete(Role.user(id)),
-                        Permission.read(Role.any()),
-                    ]
-                }
-            },
-            [
-                Permission.read(Role.any())
-            ]
-        );
+        let newUser: User;
+        const databasePayload = {
+            name: name,
+            avatar: avatar,
+            room: {
+                "$id": generatedCode,
+                name: roomName,
+                closed: false,
+                avatar: roomAvatar,
+                description: roomDescription,
+                "$permissions": [
+                    Permission.read(Role.user(id)),
+                    Permission.create(Role.user(id)),
+                    Permission.update(Role.user(id)),
+                    Permission.delete(Role.user(id)),
+                    Permission.read(Role.any()),
+                ]
+            }
+        }
+        if(permanentAccount){
+            newUser = await databases.updateDocument(
+                database,
+                "users",
+                id,
+                databasePayload
+            );
+        } else {
+            newUser = await databases.createDocument(
+                database,
+                "users",
+                id,
+                databasePayload,
+                [
+                    Permission.read(Role.any())
+                ]
+            );
+        }
 
         if(newUser && newUser.room && newUser.room.$id) return Response.json({ roomCode: generatedCode, newUser: newUser });
         return Response.json({ error: "Unknown error." }, { status: 500 })
     } catch(e: any) {
         console.error(e);
-        console.info(e.message);
         return Response.json({ error: e.message }, { status: 400 })
     }
 
@@ -92,15 +103,19 @@ export async function POST(req: Request, res: Response) {
 
     // VERIFY JWT
     let account;
+    let permanentAccount = false;
     try {
         clientJWT.setJWT(jwt);
         account = await accountJWT.get()
         if(!account || !account.$id) {
             return Response.json({ error: 'Invalid JWT' }, { status: 401 })
         }
+        if(account?.email){
+            permanentAccount = true;
+        }
     } catch (e) {
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
 
-    return apiHandler(name, avatar, roomName, roomDescription, roomAvatar, account.$id);
+    return apiHandler(name, avatar, roomName, roomDescription, roomAvatar, account.$id, permanentAccount);
 }

@@ -56,7 +56,6 @@ export const LoginForm = () => {
         }
 
         let jwt: any = "";
-        let newAccount;
 
         try {
             await account.createEmailPasswordSession(email, password);
@@ -71,7 +70,7 @@ export const LoginForm = () => {
         const res = await fetch(
             process.env.NEXT_PUBLIC_HOSTNAME + `/api/getAccount`,
             {
-                method: "GET",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -87,14 +86,14 @@ export const LoginForm = () => {
             return setError(resJson.error);
         }
 
-        await getUserData();
-
         localStorage.setItem("user", JSON.stringify({
             name: resJson.user.name,
             avatar: resJson.user.avatar,
             $id: resJson.user.$id,
             email: email,
         }));
+
+        await getUserData();
 
         router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/");
         router.refresh()

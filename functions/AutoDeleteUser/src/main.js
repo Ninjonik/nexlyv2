@@ -31,7 +31,7 @@ export default async ({
         try {
             await database.deleteDocument('nexly', 'users', removedUserId);
         } catch (err) {
-            console.log(`Can't delete user record.`);;
+            console.log(`Can't delete user record.`);
         }
 
         try {

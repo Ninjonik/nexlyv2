@@ -2,6 +2,7 @@ import {database, databases} from "@/app/utils/appwrite-server";
 import {Query, Permission, Role} from "node-appwrite";
 import Room from "@/app/utils/interfaces/RoomInterface";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
+import User from "@/app/utils/interfaces/UserInterface";
 
 const apiHandler = async (roomCode: string, name: string, avatar: string, id: string, permanentAccount: boolean) => {
     const roomQuery = await databases.listDocuments(
@@ -15,7 +16,7 @@ const apiHandler = async (roomCode: string, name: string, avatar: string, id: st
 
     if (roomQuery && roomQuery.documents && roomQuery.documents[0]) {
         const roomData = roomQuery.documents[0]
-        let newUser;
+        let newUser: User;
         if(permanentAccount) {
             newUser = await databases.updateDocument(
                 database,
@@ -72,7 +73,6 @@ export async function PATCH(req: Request, res: Response) {
             permanentAccount = true;
         }
     } catch (e) {
-        console.log(e);
         return Response.json({ error: 'Invalid JWT' }, { status: 401 })
     }
 

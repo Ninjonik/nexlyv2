@@ -22,7 +22,6 @@ const apiHandler = async (name: string, avatar: string = "defaultAvatar", id: st
         return Response.json({ error: "Unknown error." }, { status: 400 })
     } catch(e: any) {
         console.error(e);
-        console.info(e.message);
         return Response.json({ error: e.message }, { status: 400 })
     }
 

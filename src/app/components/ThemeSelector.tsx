@@ -21,7 +21,6 @@ export const ThemeSelector = () => {
     }, []);
 
     useEffect(() => {
-        // @ts-ignore
         localStorage.setItem("theme", theme);
         const localTheme = localStorage.getItem("theme");
         // @ts-ignore

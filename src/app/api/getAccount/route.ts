@@ -1,7 +1,5 @@
 import {database, databases} from "@/app/utils/appwrite-server";
 import {account as accountJWT, client as clientJWT} from "@/app/utils/appwrite-jwt";
-import {generate} from "random-words";
-import {Permission, Role} from "node-appwrite";
 
 const apiHandler = async (id: string) => {
 
@@ -12,13 +10,12 @@ const apiHandler = async (id: string) => {
         return Response.json({ error: "Unknown error." }, { status: 500 })
     } catch(e: any) {
         console.error(e);
-        console.info(e.message);
         return Response.json({ error: e.message }, { status: 400 })
     }
 
 }
 
-export async function GET(req: Request, res: Response) {
+export async function POST(req: Request, res: Response) {
     const { jwt } = await req.json();
 
     if(!jwt){

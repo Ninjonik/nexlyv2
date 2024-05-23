@@ -6,12 +6,12 @@ import {Button} from "@/app/components/Button";
 import React, {SyntheticEvent, useCallback, useState} from "react";
 import {account, storage} from "@/app/utils/appwrite";
 import {useRouter} from "next/navigation";
-import generateRandomString from "@/app/utils/generateRandomString";
 import {useUserContext} from "@/app/utils/UserContext";
 import {ID} from "appwrite";
-import {bool} from "prop-types";
 import {toast} from "react-toastify";
 import isPermanentAccount from "@/app/utils/isPermanentAccount";
+import deleteAppwriteSessions from "@/app/utils/deleteAppwriteSessions";
+import UserLocalStorageInterface from "@/app/utils/interfaces/UserLocalStorageInterface";
 
 export interface IndexFormInterface {
     name: string,
@@ -22,15 +22,40 @@ export interface IndexFormInterface {
     roomAvatar?: File,
 }
 
+const handleAnonymousUserCreation = async (permanentAccount: false | UserLocalStorageInterface, name: string | undefined, avatar: File | undefined): Promise<string> => {
+    if(!permanentAccount){
+        await deleteAppwriteSessions();
+        await account.createAnonymousSession();
+        await account.updateName(name || "Anonymous");
+
+        if(avatar){
+            try {
+                const avatarRes = await storage.createFile(
+                    "avatars",
+                    ID.unique(),
+                    avatar
+                );
+                return avatarRes.$id as string;
+            } catch (e) {
+                console.warn("Invalid avatar file type.");
+                return "defaultAvatar";
+            }
+        }
+
+        return "defaultAvatar";
+    } else {
+        return permanentAccount.avatar;
+    }
+}
+
 export const IndexForm = () => {
 
     const [form, setForm] = useState<IndexFormInterface | undefined>();
     const [error, setError] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
-    const [joinLoading, setJoinLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean | "joinRoom" | "createRoom">(false);
     const [tab, setTab] = useState<boolean>(true);
     const router = useRouter();
-    const { getUserData } = useUserContext();
+    const { user, getUserData } = useUserContext();
 
     const submitForm = (e: SyntheticEvent) => {
         toast.promise(
@@ -46,19 +71,43 @@ export const IndexForm = () => {
         )
     }
 
+    const handleApiJoinRequestResponse = useCallback(async (name: string, joinRes: any, avatarValue: string, permanentAccount: false | UserLocalStorageInterface) => {
+        const joinResJson = await joinRes.json();
+        if(!joinResJson || !joinResJson?.roomCode){
+            setLoading(false);
+            setError(joinResJson.error);
+            return false;
+        }
+
+        if(!permanentAccount){
+            localStorage.setItem("user", JSON.stringify({
+                name: name,
+                avatar: avatarValue,
+                $id: joinResJson.newUser.$id,
+            }));
+        }
+
+        return joinResJson.roomCode;
+    }, [])
+
     const handleFormSubmit = useCallback(async (e: SyntheticEvent) => {
         e.preventDefault();
 
-        const eventSubmitter = (e.nativeEvent as SubmitEvent).submitter?.id;
+        const eventSubmitter = (e.nativeEvent as SubmitEvent).submitter?.id as "createRoom" | "joinRoom";
         if(!eventSubmitter) return setLoading(false);
+        setLoading(eventSubmitter);
+
+        const permanentAccount = await isPermanentAccount();
+        let avatarValue = "defaultAvatar";
 
         if(eventSubmitter === "joinRoom"){
-            setJoinLoading(true);
             const roomCode = form?.roomCode
+
             if(!roomCode) {
-                setJoinLoading(false);
+                setLoading(false);
                 return setError("You must specify an invite code before joining a room.")
             }
+
             /* Check if the desired room exists and is open for new users */
             const res = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/checkRoom`,
@@ -74,41 +123,15 @@ export const IndexForm = () => {
             )
             const resJson = await res.json();
             if(resJson?.error){
-                setJoinLoading(false);
+                setLoading(false);
                 return setError(resJson.error);
             }
 
             /* Room exists and is open for new users */
 
-            let avatarValue = "defaultAvatar";
-            const permanentAccount = await isPermanentAccount();
-
             /* Check whether user has a permanent account */
-            if(!permanentAccount){
-                try {
-                    await account.deleteSessions();
-                } catch (e) {
-                    console.info("no session");
-                }
-                const newAnonymousSession = await account.createAnonymousSession();
-                await account.updateName(form?.name || "Anonymous");
-
-                if(form?.avatar){
-                    try {
-                        const avatarRes = await storage.createFile(
-                            "avatars",
-                            ID.unique(),
-                            form.avatar
-                        );
-                        avatarValue = avatarRes.$id;
-                    } catch (e) {
-                        console.warn("Invalid avatar file type.");
-                        return setError("Invalid avatar file type.");
-                    }
-                }
-            }
-
-            const jwt = await account.createJWT()
+            avatarValue = await handleAnonymousUserCreation(permanentAccount, form?.name, form?.avatar);
+            const jwt = await account.createJWT();
 
             const joinRes = await fetch(
                 process.env.NEXT_PUBLIC_HOSTNAME + `/api/joinRoom`,
@@ -126,54 +149,17 @@ export const IndexForm = () => {
                 }
             )
 
-            const joinResJson = await joinRes.json();
-            if(joinResJson?.error){
-                setJoinLoading(false);
-                return setError(joinResJson.error);
-            }
-
-            if(!permanentAccount){
-                localStorage.setItem("user", JSON.stringify({
-                    name: form?.name || "Anonymous",
-                    avatar: avatarValue,
-                    $id: joinResJson.newUser.$id,
-                }));
-            }
+            await handleApiJoinRequestResponse(form?.name || "Anonymous", joinRes, avatarValue, permanentAccount);
 
             await getUserData();
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
-            return setJoinLoading(false);
         }
 
         if(eventSubmitter === "createRoom"){
 
-            setLoading(true);
-
-            try {
-                await account.deleteSessions();
-            } catch (e) {
-                console.info("no session")
-            }
-
-            const newAnonymousSession = await account.createAnonymousSession()
-            await account.updateName(form?.name || "Anonymous")
-            const jwt = await account.createJWT();
-
-            let avatarValue = "defaultAvatar";
-            if(form?.avatar){
-                try {
-                    const avatarRes = await storage.createFile(
-                        "avatars",
-                        ID.unique(),
-                        form.avatar
-                    )
-                    avatarValue = avatarRes.$id;
-                } catch (e) {
-                    console.warn("Invalid avatar file type.");
-                    return setError("Invalid avatar file type.");
-                }
-            }
-
+            avatarValue = await handleAnonymousUserCreation(permanentAccount, form?.name, form?.avatar);
+            const jwt = await account.createJWT()
+            
             let RoomAvatarValue = "defaultAvatar";
             if(form?.roomAvatar){
                 try {
@@ -206,26 +192,15 @@ export const IndexForm = () => {
                 }
             )
 
-            const joinResJson = await joinRes.json();
-            if(!joinResJson || !joinResJson?.roomCode){
-                setLoading(false);
-                return setError(joinResJson.error);
-            }
+            const responseData = await handleApiJoinRequestResponse(form?.name || "Anonymous", joinRes, avatarValue, permanentAccount);
+            if(!responseData) return;
 
-            localStorage.setItem("user", JSON.stringify({
-                name: form?.name || "Anonymous",
-                avatar: avatarValue,
-                $id: joinResJson.newUser.$id,
-            }));
-
-            const roomCode: string = joinResJson.roomCode
+            const roomCode: string = responseData
             await getUserData();
             router.push(process.env.NEXT_PUBLIC_HOSTNAME + "/" + roomCode);
-            return setLoading(false);
         }
 
         setLoading(false);
-        setJoinLoading(false);
 
     }, [form])
 
@@ -242,20 +217,23 @@ export const IndexForm = () => {
                 </div>
 
                 <div className={"flex flex-col gap-4"}>
-                    <Input name={"name"} label={"Nickname"} form={form?.name}
-                           setForm={setForm} color={tab ? "primary" : "secondary"} />
+                    {!user?.email && (
+                        <Input name={"name"} label={"Nickname"} form={form?.name}
+                               setForm={setForm} color={tab ? "primary" : "secondary"} />
+                    )}
 
                     {tab ? (
                         <>
-
                             <Input name={"roomCode"} label={"Room code"} form={form?.roomCode}
                                    setForm={setForm}/>
                             <Input name={"roomDescription"} label={"‎"} form
                                 ={form?.roomDescription}
                                    setForm={setForm} color={"secondary"} className={"invisible"}/>
-                            <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
+                            {!user?.email && (
+                                <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
+                            )}
 
-                            {joinLoading ? (
+                            {loading === "joinRoom" ? (
                                 <Button disabled={true} loading={true} color={"primary"} type={"button"} name={""}
                                         text={"Joining the room"}/>
                             ) : (
@@ -269,12 +247,14 @@ export const IndexForm = () => {
                             <Input name={"roomDescription"} label={"Room description"} form={form?.roomDescription}
                                    setForm={setForm} color={"secondary"}/>
                             <div className={"flex flex-col md:flex-row justify-evenly"}>
-                                <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} color={"secondary"} />
+                                {!user?.email && (
+                                    <AvatarPicker form={form} setForm={setForm} inputName={"avatar"} />
+                                )}
                                 <AvatarPicker form={form} setForm={setForm} inputName={"roomAvatar"} color={"secondary"}
                                               avatarText={"Select room's avatar"}/>
                             </div>
 
-                            {loading ? (
+                            {loading === "createRoom" ? (
                                 <Button disabled={true} loading={true} color={"secondary"} type={"button"} name={""}
                                         text={"Creating a room"}/>
                             ) : (

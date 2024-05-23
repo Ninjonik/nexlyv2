@@ -1,4 +1,4 @@
-import {account} from "@/app/utils/appwrite";
+import deleteAppwriteSessions from "@/app/utils/deleteAppwriteSessions";
 
 const removeExistingUserAccount = async () => {
     const localStorageUser = localStorage.getItem("user");
@@ -7,11 +7,7 @@ const removeExistingUserAccount = async () => {
         if(localUser && !localUser?.email){
             localStorage.removeItem("user")
             console.warn("DELETING SESSIONS")
-            try {
-                await account.deleteSessions();
-            } catch (e) {
-                console.info("NO SESSION");
-            }
+            await deleteAppwriteSessions();
             return false;
         }
         if(localUser && localUser.email){
