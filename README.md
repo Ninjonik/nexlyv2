@@ -1,4 +1,6 @@
-# Nexly V2 - Secure Communication Platform
+# DEPRECATED
+
+## Nexly V2 - Secure Communication Platform
 
 Nexly is a communication platform designed with a focus on security and privacy, offering end-to-end encryption for all communications. 
 Unlike the other platforms, Nexly ensures a safe and secure environment for all users.
