@@ -1,4 +1,5 @@
 # DEPRECATED
+New version: https://github.com/ninjonik/nexlyspa
 
 ## Nexly V2 - Secure Communication Platform
 
